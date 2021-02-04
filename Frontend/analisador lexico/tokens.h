@@ -48,4 +48,20 @@ extern YYSTYPE yylval;
 # define FUNCTION 297
 # define VAR 298
 # define TYPE 299
+# define MOD 300
+# define NEQUAL 301
+# define NOT 302
+# define ASSIGN_PLUS 303
+# define ASSIGN_MINUS 304
+# define ASSIGN_TIMES 305
+# define ASSIGN_DIVIDE 306
+# define ASSIGN_MOD 307
+# define IF_TERNARIO 308
+# define RETURN 309
+# define T_BOOL 310
+# define T_INT 311
+# define READ 312
+# define WRITE 313
+
+
 
