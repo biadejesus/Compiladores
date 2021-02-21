@@ -62,6 +62,5 @@ extern YYSTYPE yylval;
 # define T_INT 311
 # define READ 312
 # define WRITE 313
-
-
-
+# define SWITCH 314
+# define CASE 315

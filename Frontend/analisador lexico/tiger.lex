@@ -89,6 +89,8 @@ char *getstr(const char *str)
 "%=" { adjust(); return ASSIGN_MOD    ; }
 "?"  { adjust(); return IF_TERNARIO   ; }
 
+"switch" {adjust(); return SWITCH;}
+"case" {adjust(); return CASE;}
 "while" {adjust(); return WHILE;}
 "for"   {adjust(); return FOR;}
 "to"	{adjust(); return TO;}
@@ -115,7 +117,6 @@ char *getstr(const char *str)
 "write"     { adjust(); yylval.sval = "write";    return WRITE     ; }
 "false"     { adjust(); yylval.ival = 0;          return FALSE     ; }
 "true"     { adjust(); yylval.ival = 1;          return TRUE      ; }
-
 
 \"[\-\+\*\/\.\\a-zA-Z0-9\ \t]*\" { adjust(); yylval.sval = getstr(yytext); return STRING; }
 [0-9]* { adjust(); yylval.ival = atoi(yytext); return INT; }
