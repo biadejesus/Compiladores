@@ -11,7 +11,7 @@
 #include "errormsg.h"
 
 
-bool anyErrors= FALSE;
+bool anyErrors= 0;
 
 static string fileName = "";
 
@@ -42,7 +42,7 @@ void EM_error(int pos, char *message,...)
  int num=lineNum;
  
 
-  anyErrors=TRUE;
+  anyErrors=1;
   while (lines && lines->i >= pos) 
        {lines=lines->rest; num--;}
 
@@ -57,7 +57,7 @@ void EM_error(int pos, char *message,...)
 
 void EM_reset(string fname)
 {
- anyErrors=FALSE; fileName=fname; lineNum=1;
+ anyErrors=0; fileName=fname; lineNum=1;
  linePos=intList(0,NULL);
  yyin = fopen(fname,"r");
  if (!yyin) {EM_error(0,"cannot open"); exit(1);}

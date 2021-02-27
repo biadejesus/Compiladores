@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.7.2.  */
+/* A Bison parser, made by GNU Bison 3.7.3.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
+#ifndef YY_YY_TIGER_TAB_H_INCLUDED
+# define YY_YY_TIGER_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -84,82 +84,43 @@ extern int yydebug;
     IF = 285,                      /* IF  */
     THEN = 286,                    /* THEN  */
     ELSE = 287,                    /* ELSE  */
-    WHILE = 288,                   /* WHILE  */
-    FOR = 289,                     /* FOR  */
-    TO = 290,                      /* TO  */
-    DO = 291,                      /* DO  */
-    LET = 292,                     /* LET  */
-    IN = 293,                      /* IN  */
-    END = 294,                     /* END  */
-    OF = 295,                      /* OF  */
-    BREAK = 296,                   /* BREAK  */
-    NIL = 297,                     /* NIL  */
-    FUNCTION = 298,                /* FUNCTION  */
-    VAR = 299,                     /* VAR  */
-    TYPE = 300                     /* TYPE  */
+    LET = 288,                     /* LET  */
+    IN = 289,                      /* IN  */
+    END = 290,                     /* END  */
+    OF = 291,                      /* OF  */
+    NIL = 292,                     /* NIL  */
+    FUNCTION = 293,                /* FUNCTION  */
+    VAR = 294,                     /* VAR  */
+    TYPE = 295,                    /* TYPE  */
+    FUNC_RETURN = 296,             /* FUNC_RETURN  */
+    SWITCH = 297,                  /* SWITCH  */
+    CASE = 298                     /* CASE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
-/* Token kinds.  */
-#define YYEOF 0
-#define YYerror 256
-#define YYUNDEF 257
-#define ID 258
-#define STRING 259
-#define INT 260
-#define COMMA 261
-#define COLON 262
-#define SEMICOLON 263
-#define LPAREN 264
-#define RPAREN 265
-#define LBRACK 266
-#define RBRACK 267
-#define LBRACE 268
-#define RBRACE 269
-#define DOT 270
-#define PLUS 271
-#define MINUS 272
-#define TIMES 273
-#define DIVIDE 274
-#define EQ 275
-#define NEQ 276
-#define LT 277
-#define LE 278
-#define GT 279
-#define GE 280
-#define AND 281
-#define OR 282
-#define ASSIGN 283
-#define ARRAY 284
-#define IF 285
-#define THEN 286
-#define ELSE 287
-#define WHILE 288
-#define FOR 289
-#define TO 290
-#define DO 291
-#define LET 292
-#define IN 293
-#define END 294
-#define OF 295
-#define BREAK 296
-#define NIL 297
-#define FUNCTION 298
-#define VAR 299
-#define TYPE 300
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 15 "tiger.grm"
+#line 21 "tiger.y"
 
-	int pos;
-	int ival;
-	string sval;
-	
+  int pos;
+  int ival;
+  string sval;
+  A_var var;
+  A_exp exp;
+  A_dec dec;
+  A_ty ty;
+  A_decList decList;
+  A_expList expList;
+  A_field field;
+  A_fieldList fieldList;
+  A_efield efield;
+  A_efieldList efieldList;
+  A_paramList paramList;
 
-#line 163 "y.tab.h"
+#line 124 "tiger.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -172,4 +133,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
+#endif /* !YY_YY_TIGER_TAB_H_INCLUDED  */

@@ -1,152 +1,925 @@
+Não terminais inúteis na gramática
+
+    exp
+    pri_exp
+    rel_exp
+    op_exp
+    ifStmt
+    whileStmt
+    forStmt
+    assign
+    expSeq
+
+
 Terminais sem uso na gramática
 
-    STRING
-    INT
-    COMMA
     COLON
-    SEMICOLON
-    LPAREN
-    RPAREN
-    LBRACK
-    RBRACK
-    LBRACE
-    RBRACE
-    DOT
     PLUS
     MINUS
     TIMES
     DIVIDE
-    EQ
-    NEQ
-    LT
-    LE
+    MOD
+    EQUAL
+    NEQUAL
     GT
     GE
-    AND
+    LT
+    LE
     OR
-    ASSIGN
-    ARRAY
+    AND
+    NOT
+    ASSIGN_PLUS
+    ASSIGN_MINUS
+    ASSIGN_TIMES
+    ASSIGN_DIVIDE
+    ASSIGN_MOD
     IF
-    THEN
     ELSE
     WHILE
     FOR
-    TO
-    DO
-    LET
-    IN
-    END
-    OF
-    BREAK
-    NIL
-    FUNCTION
-    VAR
-    TYPE
+    IF_TERNARIO
+
+
+Regras inúteis na gramática
+
+   40 exp: op_exp
+
+   41 pri_exp: literal
+   42        | MINUS pri_exp
+   43        | pri_exp IF_TERNARIO pri_exp COLON pri_exp
+   44        | subCall
+   45        | var
+   46        | LPAREN exp RPAREN
+
+   47 rel_exp: op_exp
+   48        | rel_exp GT op_exp
+   49        | rel_exp LT op_exp
+   50        | rel_exp NEQUAL op_exp
+   51        | rel_exp EQUAL op_exp
+   52        | rel_exp LE op_exp
+   53        | rel_exp GE op_exp
+
+   54 op_exp: op_exp
+   55       | op_exp PLUS op_exp
+   56       | op_exp MINUS op_exp
+   57       | op_exp TIMES op_exp
+   58       | op_exp DIVIDE op_exp
+
+   59 stmt: ifStmt
+   60     | whileStmt
+   61     | forStmt
+   62     | assign SEMICOLON
+
+   63 ifStmt: IF LPAREN exp RPAREN LBRACE block RBRACE
+   64       | IF LPAREN exp RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE
+
+   65 whileStmt: WHILE LPAREN exp RPAREN LBRACE block RBRACE
+
+   66 forStmt: FOR LPAREN assign SEMICOLON exp SEMICOLON assign RPAREN LBRACE block RBRACE
+
+   67 returnStmt: RETURN exp SEMICOLON
+
+   68 assign: var ASSIGN exp
+   69       | var ASSIGN_PLUS exp
+   70       | var ASSIGN_MINUS exp
+   71       | var ASSIGN_TIMES exp
+   72       | var ASSIGN_DIVIDE exp
+   73       | var ASSIGN_MOD exp
+
+   74 var: ID LBRACK exp RBRACK
+
+   75 expList: expSeq
+
+   76 expSeq: exp COMMA expSeq
+   77       | exp
 
 
 Gramática
 
     0 $accept: program $end
 
-    1 program: exp
+    1 program: decSeq
 
-    2 exp: ID
+    2 decSeq: dec decSeq
+    3       | dec
+
+    4 dec: varDec
+    5    | ID LPAREN paramList RPAREN LBRACE block RBRACE
+    6    | type ID LPAREN paramList RPAREN LBRACE block RBRACE
+
+    7 varDecList: varDec varDecList
+    8           | %empty
+
+    9 varDec: type ID SEMICOLON
+   10       | type ID ASSIGN literal SEMICOLON
+   11       | type ID LBRACK INT RBRACK SEMICOLON
+
+   12 type: T_INT
+   13     | T_STRING
+   14     | T_BOOL
+
+   15 literal: INT
+   16        | STRING
+   17        | TRUE
+   18        | FALSE
+
+   19 paramList: paramSeq
+   20          | %empty
+
+   21 paramSeq: param COMMA paramSeq
+   22         | param
+
+   23 param: type ID
+   24      | type ID LBRACK RBRACK
+
+   25 block: varDecList stmtList
+
+   26 stmtList: stmt stmtList
+   27         | %empty
+
+   28 stmt: breakStmt
+   29     | returnStmt
+   30     | readStmt
+   31     | writeStmt
+   32     | subCall SEMICOLON
+
+   33 breakStmt: BREAK SEMICOLON
+
+   34 readStmt: READ var SEMICOLON
+
+   35 writeStmt: WRITE expList SEMICOLON
+
+   36 returnStmt: RETURN SEMICOLON
+
+   37 subCall: ID LPAREN expList RPAREN
+
+   38 var: ID
+
+   39 expList: %empty
 
 
 Terminais, com as regras onde eles aparecem
 
     $end (0) 0
     error (256)
-    ID <sval> (258) 2
-    STRING <sval> (259)
-    INT <ival> (260)
-    COMMA (261)
-    COLON (262)
-    SEMICOLON (263)
-    LPAREN (264)
-    RPAREN (265)
-    LBRACK (266)
-    RBRACK (267)
-    LBRACE (268)
-    RBRACE (269)
-    DOT (270)
-    PLUS (271)
-    MINUS (272)
-    TIMES (273)
-    DIVIDE (274)
-    EQ (275)
-    NEQ (276)
-    LT (277)
-    LE (278)
-    GT (279)
-    GE (280)
-    AND (281)
-    OR (282)
-    ASSIGN (283)
-    ARRAY (284)
-    IF (285)
-    THEN (286)
-    ELSE (287)
-    WHILE (288)
-    FOR (289)
-    TO (290)
-    DO (291)
-    LET (292)
-    IN (293)
-    END (294)
-    OF (295)
-    BREAK (296)
-    NIL (297)
-    FUNCTION (298)
-    VAR (299)
-    TYPE (300)
+    ID <sval> (258) 5 6 9 10 11 23 24 37 38
+    STRING <sval> (259) 16
+    T_STRING <sval> (260) 13
+    T_BOOL <sval> (261) 14
+    T_INT <sval> (262) 12
+    READ <sval> (263) 34
+    WRITE <sval> (264) 35
+    INT <ival> (265) 11 15
+    FALSE <ival> (266) 18
+    TRUE <ival> (267) 17
+    LPAREN (268) 5 6 37
+    RPAREN (269) 5 6 37
+    LBRACK (270) 11 24
+    RBRACK (271) 11 24
+    LBRACE (272) 5 6
+    RBRACE (273) 5 6
+    COMMA (274) 21
+    SEMICOLON (275) 9 10 11 32 33 34 35 36
+    COLON (276)
+    PLUS (277)
+    MINUS (278)
+    TIMES (279)
+    DIVIDE (280)
+    MOD (281)
+    EQUAL (282)
+    NEQUAL (283)
+    GT (284)
+    GE (285)
+    LT (286)
+    LE (287)
+    OR (288)
+    AND (289)
+    NOT (290)
+    ASSIGN (291) 10
+    ASSIGN_PLUS (292)
+    ASSIGN_MINUS (293)
+    ASSIGN_TIMES (294)
+    ASSIGN_DIVIDE (295)
+    ASSIGN_MOD (296)
+    IF (297)
+    ELSE (298)
+    WHILE (299)
+    FOR (300)
+    BREAK (301) 33
+    RETURN (302) 36
+    IF_TERNARIO (303)
 
 
 Não terminais com as regras onde eles aparecem
 
-    $accept (46)
+    $accept (49)
         à esquerda: 0
-    program (47)
+    program (50)
         à esquerda: 1
         à direita: 0
-    exp (48)
-        à esquerda: 2
-        à direita: 1
+    decSeq <A_decList> (51)
+        à esquerda: 2 3
+        à direita: 1 2
+    dec <A_dec> (52)
+        à esquerda: 4 5 6
+        à direita: 2 3
+    varDecList <A_vardecList> (53)
+        à esquerda: 7 8
+        à direita: 7 25
+    varDec <A_vardec> (54)
+        à esquerda: 9 10 11
+        à direita: 4 7
+    type <A_ty> (55)
+        à esquerda: 12 13 14
+        à direita: 6 9 10 11 23 24
+    literal <A_exp> (56)
+        à esquerda: 15 16 17 18
+        à direita: 10
+    paramList <A_fieldList> (57)
+        à esquerda: 19 20
+        à direita: 5 6
+    paramSeq <A_fieldList> (58)
+        à esquerda: 21 22
+        à direita: 19 21
+    param <A_field> (59)
+        à esquerda: 23 24
+        à direita: 21 22
+    block <A_exp> (60)
+        à esquerda: 25
+        à direita: 5 6
+    stmtList <A_expList> (61)
+        à esquerda: 26 27
+        à direita: 25 26
+    stmt <A_exp> (62)
+        à esquerda: 28 29 30 31 32
+        à direita: 26
+    breakStmt <A_exp> (63)
+        à esquerda: 33
+        à direita: 28
+    readStmt <A_exp> (64)
+        à esquerda: 34
+        à direita: 30
+    writeStmt <A_exp> (65)
+        à esquerda: 35
+        à direita: 31
+    returnStmt <A_exp> (66)
+        à esquerda: 36
+        à direita: 29
+    subCall <A_exp> (67)
+        à esquerda: 37
+        à direita: 32
+    var <A_var> (68)
+        à esquerda: 38
+        à direita: 34
+    expList <A_expList> (69)
+        à esquerda: 39
+        à direita: 35 37
 
 
 Estado 0
 
     0 $accept: • program $end
 
-    ID  deslocar, e ir ao estado 1
+    ID        deslocar, e ir ao estado 1
+    T_STRING  deslocar, e ir ao estado 2
+    T_BOOL    deslocar, e ir ao estado 3
+    T_INT     deslocar, e ir ao estado 4
 
-    program  ir ao estado 2
-    exp      ir ao estado 3
+    program  ir ao estado 5
+    decSeq   ir ao estado 6
+    dec      ir ao estado 7
+    varDec   ir ao estado 8
+    type     ir ao estado 9
 
 
 Estado 1
 
-    2 exp: ID •
+    5 dec: ID • LPAREN paramList RPAREN LBRACE block RBRACE
 
-    $padrão  reduzir usando a regra 2 (exp)
+    LPAREN  deslocar, e ir ao estado 10
 
 
 Estado 2
 
-    0 $accept: program • $end
+   13 type: T_STRING •
 
-    $end  deslocar, e ir ao estado 4
+    $padrão  reduzir usando a regra 13 (type)
 
 
 Estado 3
 
-    1 program: exp •
+   14 type: T_BOOL •
 
-    $padrão  reduzir usando a regra 1 (program)
+    $padrão  reduzir usando a regra 14 (type)
 
 
 Estado 4
 
+   12 type: T_INT •
+
+    $padrão  reduzir usando a regra 12 (type)
+
+
+Estado 5
+
+    0 $accept: program • $end
+
+    $end  deslocar, e ir ao estado 11
+
+
+Estado 6
+
+    1 program: decSeq •
+
+    $padrão  reduzir usando a regra 1 (program)
+
+
+Estado 7
+
+    2 decSeq: dec • decSeq
+    3       | dec •
+
+    ID        deslocar, e ir ao estado 1
+    T_STRING  deslocar, e ir ao estado 2
+    T_BOOL    deslocar, e ir ao estado 3
+    T_INT     deslocar, e ir ao estado 4
+
+    $padrão  reduzir usando a regra 3 (decSeq)
+
+    decSeq  ir ao estado 12
+    dec     ir ao estado 7
+    varDec  ir ao estado 8
+    type    ir ao estado 9
+
+
+Estado 8
+
+    4 dec: varDec •
+
+    $padrão  reduzir usando a regra 4 (dec)
+
+
+Estado 9
+
+    6 dec: type • ID LPAREN paramList RPAREN LBRACE block RBRACE
+    9 varDec: type • ID SEMICOLON
+   10       | type • ID ASSIGN literal SEMICOLON
+   11       | type • ID LBRACK INT RBRACK SEMICOLON
+
+    ID  deslocar, e ir ao estado 13
+
+
+Estado 10
+
+    5 dec: ID LPAREN • paramList RPAREN LBRACE block RBRACE
+
+    T_STRING  deslocar, e ir ao estado 2
+    T_BOOL    deslocar, e ir ao estado 3
+    T_INT     deslocar, e ir ao estado 4
+
+    $padrão  reduzir usando a regra 20 (paramList)
+
+    type       ir ao estado 14
+    paramList  ir ao estado 15
+    paramSeq   ir ao estado 16
+    param      ir ao estado 17
+
+
+Estado 11
+
     0 $accept: program $end •
 
     $padrão  aceitar
+
+
+Estado 12
+
+    2 decSeq: dec decSeq •
+
+    $padrão  reduzir usando a regra 2 (decSeq)
+
+
+Estado 13
+
+    6 dec: type ID • LPAREN paramList RPAREN LBRACE block RBRACE
+    9 varDec: type ID • SEMICOLON
+   10       | type ID • ASSIGN literal SEMICOLON
+   11       | type ID • LBRACK INT RBRACK SEMICOLON
+
+    LPAREN     deslocar, e ir ao estado 18
+    LBRACK     deslocar, e ir ao estado 19
+    SEMICOLON  deslocar, e ir ao estado 20
+    ASSIGN     deslocar, e ir ao estado 21
+
+
+Estado 14
+
+   23 param: type • ID
+   24      | type • ID LBRACK RBRACK
+
+    ID  deslocar, e ir ao estado 22
+
+
+Estado 15
+
+    5 dec: ID LPAREN paramList • RPAREN LBRACE block RBRACE
+
+    RPAREN  deslocar, e ir ao estado 23
+
+
+Estado 16
+
+   19 paramList: paramSeq •
+
+    $padrão  reduzir usando a regra 19 (paramList)
+
+
+Estado 17
+
+   21 paramSeq: param • COMMA paramSeq
+   22         | param •
+
+    COMMA  deslocar, e ir ao estado 24
+
+    $padrão  reduzir usando a regra 22 (paramSeq)
+
+
+Estado 18
+
+    6 dec: type ID LPAREN • paramList RPAREN LBRACE block RBRACE
+
+    T_STRING  deslocar, e ir ao estado 2
+    T_BOOL    deslocar, e ir ao estado 3
+    T_INT     deslocar, e ir ao estado 4
+
+    $padrão  reduzir usando a regra 20 (paramList)
+
+    type       ir ao estado 14
+    paramList  ir ao estado 25
+    paramSeq   ir ao estado 16
+    param      ir ao estado 17
+
+
+Estado 19
+
+   11 varDec: type ID LBRACK • INT RBRACK SEMICOLON
+
+    INT  deslocar, e ir ao estado 26
+
+
+Estado 20
+
+    9 varDec: type ID SEMICOLON •
+
+    $padrão  reduzir usando a regra 9 (varDec)
+
+
+Estado 21
+
+   10 varDec: type ID ASSIGN • literal SEMICOLON
+
+    STRING  deslocar, e ir ao estado 27
+    INT     deslocar, e ir ao estado 28
+    FALSE   deslocar, e ir ao estado 29
+    TRUE    deslocar, e ir ao estado 30
+
+    literal  ir ao estado 31
+
+
+Estado 22
+
+   23 param: type ID •
+   24      | type ID • LBRACK RBRACK
+
+    LBRACK  deslocar, e ir ao estado 32
+
+    $padrão  reduzir usando a regra 23 (param)
+
+
+Estado 23
+
+    5 dec: ID LPAREN paramList RPAREN • LBRACE block RBRACE
+
+    LBRACE  deslocar, e ir ao estado 33
+
+
+Estado 24
+
+   21 paramSeq: param COMMA • paramSeq
+
+    T_STRING  deslocar, e ir ao estado 2
+    T_BOOL    deslocar, e ir ao estado 3
+    T_INT     deslocar, e ir ao estado 4
+
+    type      ir ao estado 14
+    paramSeq  ir ao estado 34
+    param     ir ao estado 17
+
+
+Estado 25
+
+    6 dec: type ID LPAREN paramList • RPAREN LBRACE block RBRACE
+
+    RPAREN  deslocar, e ir ao estado 35
+
+
+Estado 26
+
+   11 varDec: type ID LBRACK INT • RBRACK SEMICOLON
+
+    RBRACK  deslocar, e ir ao estado 36
+
+
+Estado 27
+
+   16 literal: STRING •
+
+    $padrão  reduzir usando a regra 16 (literal)
+
+
+Estado 28
+
+   15 literal: INT •
+
+    $padrão  reduzir usando a regra 15 (literal)
+
+
+Estado 29
+
+   18 literal: FALSE •
+
+    $padrão  reduzir usando a regra 18 (literal)
+
+
+Estado 30
+
+   17 literal: TRUE •
+
+    $padrão  reduzir usando a regra 17 (literal)
+
+
+Estado 31
+
+   10 varDec: type ID ASSIGN literal • SEMICOLON
+
+    SEMICOLON  deslocar, e ir ao estado 37
+
+
+Estado 32
+
+   24 param: type ID LBRACK • RBRACK
+
+    RBRACK  deslocar, e ir ao estado 38
+
+
+Estado 33
+
+    5 dec: ID LPAREN paramList RPAREN LBRACE • block RBRACE
+
+    T_STRING  deslocar, e ir ao estado 2
+    T_BOOL    deslocar, e ir ao estado 3
+    T_INT     deslocar, e ir ao estado 4
+
+    $padrão  reduzir usando a regra 8 (varDecList)
+
+    varDecList  ir ao estado 39
+    varDec      ir ao estado 40
+    type        ir ao estado 41
+    block       ir ao estado 42
+
+
+Estado 34
+
+   21 paramSeq: param COMMA paramSeq •
+
+    $padrão  reduzir usando a regra 21 (paramSeq)
+
+
+Estado 35
+
+    6 dec: type ID LPAREN paramList RPAREN • LBRACE block RBRACE
+
+    LBRACE  deslocar, e ir ao estado 43
+
+
+Estado 36
+
+   11 varDec: type ID LBRACK INT RBRACK • SEMICOLON
+
+    SEMICOLON  deslocar, e ir ao estado 44
+
+
+Estado 37
+
+   10 varDec: type ID ASSIGN literal SEMICOLON •
+
+    $padrão  reduzir usando a regra 10 (varDec)
+
+
+Estado 38
+
+   24 param: type ID LBRACK RBRACK •
+
+    $padrão  reduzir usando a regra 24 (param)
+
+
+Estado 39
+
+   25 block: varDecList • stmtList
+
+    ID      deslocar, e ir ao estado 45
+    READ    deslocar, e ir ao estado 46
+    WRITE   deslocar, e ir ao estado 47
+    BREAK   deslocar, e ir ao estado 48
+    RETURN  deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 27 (stmtList)
+
+    stmtList    ir ao estado 50
+    stmt        ir ao estado 51
+    breakStmt   ir ao estado 52
+    readStmt    ir ao estado 53
+    writeStmt   ir ao estado 54
+    returnStmt  ir ao estado 55
+    subCall     ir ao estado 56
+
+
+Estado 40
+
+    7 varDecList: varDec • varDecList
+
+    T_STRING  deslocar, e ir ao estado 2
+    T_BOOL    deslocar, e ir ao estado 3
+    T_INT     deslocar, e ir ao estado 4
+
+    $padrão  reduzir usando a regra 8 (varDecList)
+
+    varDecList  ir ao estado 57
+    varDec      ir ao estado 40
+    type        ir ao estado 41
+
+
+Estado 41
+
+    9 varDec: type • ID SEMICOLON
+   10       | type • ID ASSIGN literal SEMICOLON
+   11       | type • ID LBRACK INT RBRACK SEMICOLON
+
+    ID  deslocar, e ir ao estado 58
+
+
+Estado 42
+
+    5 dec: ID LPAREN paramList RPAREN LBRACE block • RBRACE
+
+    RBRACE  deslocar, e ir ao estado 59
+
+
+Estado 43
+
+    6 dec: type ID LPAREN paramList RPAREN LBRACE • block RBRACE
+
+    T_STRING  deslocar, e ir ao estado 2
+    T_BOOL    deslocar, e ir ao estado 3
+    T_INT     deslocar, e ir ao estado 4
+
+    $padrão  reduzir usando a regra 8 (varDecList)
+
+    varDecList  ir ao estado 39
+    varDec      ir ao estado 40
+    type        ir ao estado 41
+    block       ir ao estado 60
+
+
+Estado 44
+
+   11 varDec: type ID LBRACK INT RBRACK SEMICOLON •
+
+    $padrão  reduzir usando a regra 11 (varDec)
+
+
+Estado 45
+
+   37 subCall: ID • LPAREN expList RPAREN
+
+    LPAREN  deslocar, e ir ao estado 61
+
+
+Estado 46
+
+   34 readStmt: READ • var SEMICOLON
+
+    ID  deslocar, e ir ao estado 62
+
+    var  ir ao estado 63
+
+
+Estado 47
+
+   35 writeStmt: WRITE • expList SEMICOLON
+
+    $padrão  reduzir usando a regra 39 (expList)
+
+    expList  ir ao estado 64
+
+
+Estado 48
+
+   33 breakStmt: BREAK • SEMICOLON
+
+    SEMICOLON  deslocar, e ir ao estado 65
+
+
+Estado 49
+
+   36 returnStmt: RETURN • SEMICOLON
+
+    SEMICOLON  deslocar, e ir ao estado 66
+
+
+Estado 50
+
+   25 block: varDecList stmtList •
+
+    $padrão  reduzir usando a regra 25 (block)
+
+
+Estado 51
+
+   26 stmtList: stmt • stmtList
+
+    ID      deslocar, e ir ao estado 45
+    READ    deslocar, e ir ao estado 46
+    WRITE   deslocar, e ir ao estado 47
+    BREAK   deslocar, e ir ao estado 48
+    RETURN  deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 27 (stmtList)
+
+    stmtList    ir ao estado 67
+    stmt        ir ao estado 51
+    breakStmt   ir ao estado 52
+    readStmt    ir ao estado 53
+    writeStmt   ir ao estado 54
+    returnStmt  ir ao estado 55
+    subCall     ir ao estado 56
+
+
+Estado 52
+
+   28 stmt: breakStmt •
+
+    $padrão  reduzir usando a regra 28 (stmt)
+
+
+Estado 53
+
+   30 stmt: readStmt •
+
+    $padrão  reduzir usando a regra 30 (stmt)
+
+
+Estado 54
+
+   31 stmt: writeStmt •
+
+    $padrão  reduzir usando a regra 31 (stmt)
+
+
+Estado 55
+
+   29 stmt: returnStmt •
+
+    $padrão  reduzir usando a regra 29 (stmt)
+
+
+Estado 56
+
+   32 stmt: subCall • SEMICOLON
+
+    SEMICOLON  deslocar, e ir ao estado 68
+
+
+Estado 57
+
+    7 varDecList: varDec varDecList •
+
+    $padrão  reduzir usando a regra 7 (varDecList)
+
+
+Estado 58
+
+    9 varDec: type ID • SEMICOLON
+   10       | type ID • ASSIGN literal SEMICOLON
+   11       | type ID • LBRACK INT RBRACK SEMICOLON
+
+    LBRACK     deslocar, e ir ao estado 19
+    SEMICOLON  deslocar, e ir ao estado 20
+    ASSIGN     deslocar, e ir ao estado 21
+
+
+Estado 59
+
+    5 dec: ID LPAREN paramList RPAREN LBRACE block RBRACE •
+
+    $padrão  reduzir usando a regra 5 (dec)
+
+
+Estado 60
+
+    6 dec: type ID LPAREN paramList RPAREN LBRACE block • RBRACE
+
+    RBRACE  deslocar, e ir ao estado 69
+
+
+Estado 61
+
+   37 subCall: ID LPAREN • expList RPAREN
+
+    $padrão  reduzir usando a regra 39 (expList)
+
+    expList  ir ao estado 70
+
+
+Estado 62
+
+   38 var: ID •
+
+    $padrão  reduzir usando a regra 38 (var)
+
+
+Estado 63
+
+   34 readStmt: READ var • SEMICOLON
+
+    SEMICOLON  deslocar, e ir ao estado 71
+
+
+Estado 64
+
+   35 writeStmt: WRITE expList • SEMICOLON
+
+    SEMICOLON  deslocar, e ir ao estado 72
+
+
+Estado 65
+
+   33 breakStmt: BREAK SEMICOLON •
+
+    $padrão  reduzir usando a regra 33 (breakStmt)
+
+
+Estado 66
+
+   36 returnStmt: RETURN SEMICOLON •
+
+    $padrão  reduzir usando a regra 36 (returnStmt)
+
+
+Estado 67
+
+   26 stmtList: stmt stmtList •
+
+    $padrão  reduzir usando a regra 26 (stmtList)
+
+
+Estado 68
+
+   32 stmt: subCall SEMICOLON •
+
+    $padrão  reduzir usando a regra 32 (stmt)
+
+
+Estado 69
+
+    6 dec: type ID LPAREN paramList RPAREN LBRACE block RBRACE •
+
+    $padrão  reduzir usando a regra 6 (dec)
+
+
+Estado 70
+
+   37 subCall: ID LPAREN expList • RPAREN
+
+    RPAREN  deslocar, e ir ao estado 73
+
+
+Estado 71
+
+   34 readStmt: READ var SEMICOLON •
+
+    $padrão  reduzir usando a regra 34 (readStmt)
+
+
+Estado 72
+
+   35 writeStmt: WRITE expList SEMICOLON •
+
+    $padrão  reduzir usando a regra 35 (writeStmt)
+
+
+Estado 73
+
+   37 subCall: ID LPAREN expList RPAREN •
+
+    $padrão  reduzir usando a regra 37 (subCall)
