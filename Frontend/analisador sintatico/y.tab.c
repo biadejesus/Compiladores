@@ -84,7 +84,7 @@ void yyerror(char *s) {
 A_exp absyn_root;
 
 
-#line 88 "tiger.tab.c"
+#line 88 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -107,7 +107,164 @@ A_exp absyn_root;
 #  endif
 # endif
 
-#include "tiger.tab.h"
+/* Use api.header.include to #include this header
+   instead of duplicating it here.  */
+#ifndef YY_YY_Y_TAB_H_INCLUDED
+# define YY_YY_Y_TAB_H_INCLUDED
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
+
+/* Token kinds.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    LOW = 258,                     /* LOW  */
+    UMINUS = 259,                  /* UMINUS  */
+    ID = 260,                      /* ID  */
+    STRING = 261,                  /* STRING  */
+    INT = 262,                     /* INT  */
+    COMMA = 263,                   /* COMMA  */
+    COLON = 264,                   /* COLON  */
+    SEMICOLON = 265,               /* SEMICOLON  */
+    LPAREN = 266,                  /* LPAREN  */
+    RPAREN = 267,                  /* RPAREN  */
+    LBRACK = 268,                  /* LBRACK  */
+    RBRACK = 269,                  /* RBRACK  */
+    LBRACE = 270,                  /* LBRACE  */
+    RBRACE = 271,                  /* RBRACE  */
+    DOT = 272,                     /* DOT  */
+    PLUS = 273,                    /* PLUS  */
+    MINUS = 274,                   /* MINUS  */
+    TIMES = 275,                   /* TIMES  */
+    DIVIDE = 276,                  /* DIVIDE  */
+    EQ = 277,                      /* EQ  */
+    NEQ = 278,                     /* NEQ  */
+    LT = 279,                      /* LT  */
+    LE = 280,                      /* LE  */
+    GT = 281,                      /* GT  */
+    GE = 282,                      /* GE  */
+    AND = 283,                     /* AND  */
+    OR = 284,                      /* OR  */
+    ASSIGN = 285,                  /* ASSIGN  */
+    ARRAY = 286,                   /* ARRAY  */
+    IF = 287,                      /* IF  */
+    THEN = 288,                    /* THEN  */
+    ELSE = 289,                    /* ELSE  */
+    WHILE = 290,                   /* WHILE  */
+    FOR = 291,                     /* FOR  */
+    TO = 292,                      /* TO  */
+    DO = 293,                      /* DO  */
+    LET = 294,                     /* LET  */
+    IN = 295,                      /* IN  */
+    END = 296,                     /* END  */
+    OF = 297,                      /* OF  */
+    BREAK = 298,                   /* BREAK  */
+    NIL = 299,                     /* NIL  */
+    FUNCTION = 300,                /* FUNCTION  */
+    VAR = 301,                     /* VAR  */
+    TYPE = 302                     /* TYPE  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
+#endif
+/* Token kinds.  */
+#define YYEOF 0
+#define YYerror 256
+#define YYUNDEF 257
+#define LOW 258
+#define UMINUS 259
+#define ID 260
+#define STRING 261
+#define INT 262
+#define COMMA 263
+#define COLON 264
+#define SEMICOLON 265
+#define LPAREN 266
+#define RPAREN 267
+#define LBRACK 268
+#define RBRACK 269
+#define LBRACE 270
+#define RBRACE 271
+#define DOT 272
+#define PLUS 273
+#define MINUS 274
+#define TIMES 275
+#define DIVIDE 276
+#define EQ 277
+#define NEQ 278
+#define LT 279
+#define LE 280
+#define GT 281
+#define GE 282
+#define AND 283
+#define OR 284
+#define ASSIGN 285
+#define ARRAY 286
+#define IF 287
+#define THEN 288
+#define ELSE 289
+#define WHILE 290
+#define FOR 291
+#define TO 292
+#define DO 293
+#define LET 294
+#define IN 295
+#define END 296
+#define OF 297
+#define BREAK 298
+#define NIL 299
+#define FUNCTION 300
+#define VAR 301
+#define TYPE 302
+
+/* Value type.  */
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+union YYSTYPE
+{
+#line 18 "tiger.y"
+
+	int pos;
+	int ival;
+	string sval;
+  A_var var;
+  A_exp exp;
+  A_dec dec;
+  A_ty ty;
+  A_decList declist;
+  A_expList explist;
+  A_field field;
+  A_fieldList fieldlist;
+  A_fundec fundec;
+  A_fundecList fundeclist;
+  A_namety namety;
+  A_nametyList nametylist;
+  A_efield efield;
+  A_efieldList efieldlist;
+  
+
+#line 255 "y.tab.c"
+
+};
+typedef union YYSTYPE YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
+#endif
+
+
+extern YYSTYPE yylval;
+
+int yyparse (void);
+
+#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -1268,443 +1425,443 @@ yyreduce:
   case 2: /* program: exp  */
 #line 84 "tiger.y"
              { absyn_root = (yyvsp[0].exp); }
-#line 1272 "tiger.tab.c"
+#line 1429 "y.tab.c"
     break;
 
   case 3: /* exp: lvalue  */
 #line 86 "tiger.y"
             { (yyval.exp) = A_VarExp(EM_tokPos, (yyvsp[0].var)); }
-#line 1278 "tiger.tab.c"
+#line 1435 "y.tab.c"
     break;
 
   case 4: /* exp: NIL  */
 #line 87 "tiger.y"
             { (yyval.exp) = A_NilExp(EM_tokPos); }
-#line 1284 "tiger.tab.c"
+#line 1441 "y.tab.c"
     break;
 
   case 5: /* exp: LPAREN RPAREN  */
 #line 88 "tiger.y"
                    { (yyval.exp) = A_SeqExp(EM_tokPos, NULL); }
-#line 1290 "tiger.tab.c"
+#line 1447 "y.tab.c"
     break;
 
   case 6: /* exp: INT  */
 #line 89 "tiger.y"
                    { (yyval.exp) = A_IntExp(EM_tokPos, (yyvsp[0].ival)); }
-#line 1296 "tiger.tab.c"
+#line 1453 "y.tab.c"
     break;
 
   case 7: /* exp: STRING  */
 #line 90 "tiger.y"
                    { (yyval.exp) = A_StringExp(EM_tokPos, (yyvsp[0].sval)); }
-#line 1302 "tiger.tab.c"
+#line 1459 "y.tab.c"
     break;
 
   case 8: /* exp: MINUS exp  */
 #line 91 "tiger.y"
                             { (yyval.exp) = A_OpExp(EM_tokPos, A_minusOp, A_IntExp(EM_tokPos, 0), (yyvsp[0].exp)); }
-#line 1308 "tiger.tab.c"
+#line 1465 "y.tab.c"
     break;
 
   case 9: /* exp: func_call  */
 #line 92 "tiger.y"
                    { (yyval.exp) = (yyvsp[0].exp); }
-#line 1314 "tiger.tab.c"
+#line 1471 "y.tab.c"
     break;
 
   case 10: /* exp: arith_exp  */
 #line 93 "tiger.y"
                    { (yyval.exp) = (yyvsp[0].exp); }
-#line 1320 "tiger.tab.c"
+#line 1477 "y.tab.c"
     break;
 
   case 11: /* exp: cmp_exp  */
 #line 94 "tiger.y"
                    { (yyval.exp) = (yyvsp[0].exp); }
-#line 1326 "tiger.tab.c"
+#line 1483 "y.tab.c"
     break;
 
   case 12: /* exp: bool_exp  */
 #line 95 "tiger.y"
                    { (yyval.exp) = (yyvsp[0].exp); }
-#line 1332 "tiger.tab.c"
+#line 1489 "y.tab.c"
     break;
 
   case 13: /* exp: record_create  */
 #line 96 "tiger.y"
                    { (yyval.exp) = (yyvsp[0].exp); }
-#line 1338 "tiger.tab.c"
+#line 1495 "y.tab.c"
     break;
 
   case 14: /* exp: array_create  */
 #line 97 "tiger.y"
                    { (yyval.exp) = (yyvsp[0].exp); }
-#line 1344 "tiger.tab.c"
+#line 1501 "y.tab.c"
     break;
 
   case 15: /* exp: lvalue ASSIGN exp  */
 #line 98 "tiger.y"
                        { (yyval.exp) = A_AssignExp(EM_tokPos, (yyvsp[-2].var), (yyvsp[0].exp)); }
-#line 1350 "tiger.tab.c"
+#line 1507 "y.tab.c"
     break;
 
   case 16: /* exp: IF exp THEN exp ELSE exp  */
 #line 99 "tiger.y"
                               { (yyval.exp) = A_IfExp(EM_tokPos, (yyvsp[-4].exp), (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1356 "tiger.tab.c"
+#line 1513 "y.tab.c"
     break;
 
   case 17: /* exp: IF exp THEN exp  */
 #line 100 "tiger.y"
                      { (yyval.exp) = A_IfExp(EM_tokPos, (yyvsp[-2].exp), (yyvsp[0].exp), NULL); }
-#line 1362 "tiger.tab.c"
+#line 1519 "y.tab.c"
     break;
 
   case 18: /* exp: WHILE exp DO exp  */
 #line 101 "tiger.y"
                       { (yyval.exp) = A_WhileExp(EM_tokPos, (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1368 "tiger.tab.c"
+#line 1525 "y.tab.c"
     break;
 
   case 19: /* exp: FOR ID ASSIGN exp TO exp DO exp  */
 #line 102 "tiger.y"
                                      { (yyval.exp) = A_ForExp(EM_tokPos, S_Symbol((yyvsp[-6].sval)), (yyvsp[-4].exp), (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1374 "tiger.tab.c"
+#line 1531 "y.tab.c"
     break;
 
   case 20: /* exp: BREAK  */
 #line 103 "tiger.y"
            { (yyval.exp) = A_BreakExp(EM_tokPos); }
-#line 1380 "tiger.tab.c"
+#line 1537 "y.tab.c"
     break;
 
   case 21: /* exp: LET decs IN expseq END  */
 #line 104 "tiger.y"
                             { (yyval.exp) = A_LetExp(EM_tokPos, (yyvsp[-3].declist), A_SeqExp(EM_tokPos, (yyvsp[-1].explist))); }
-#line 1386 "tiger.tab.c"
+#line 1543 "y.tab.c"
     break;
 
   case 22: /* exp: LPAREN expseq RPAREN  */
 #line 105 "tiger.y"
                           { (yyval.exp) = A_SeqExp(EM_tokPos, (yyvsp[-1].explist)); }
-#line 1392 "tiger.tab.c"
+#line 1549 "y.tab.c"
     break;
 
   case 23: /* lvalue: ID  */
 #line 107 "tiger.y"
                                  { (yyval.var) = A_SimpleVar(EM_tokPos, S_Symbol((yyvsp[0].sval))); }
-#line 1398 "tiger.tab.c"
+#line 1555 "y.tab.c"
     break;
 
   case 24: /* lvalue: ID LBRACK exp RBRACK  */
 #line 108 "tiger.y"
                                  { (yyval.var) = A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol((yyvsp[-3].sval))), (yyvsp[-1].exp)); }
-#line 1404 "tiger.tab.c"
+#line 1561 "y.tab.c"
     break;
 
   case 25: /* lvalue: lvalue LBRACK exp RBRACK  */
 #line 109 "tiger.y"
                                  { (yyval.var) = A_SubscriptVar(EM_tokPos, (yyvsp[-3].var), (yyvsp[-1].exp)); }
-#line 1410 "tiger.tab.c"
+#line 1567 "y.tab.c"
     break;
 
   case 26: /* lvalue: lvalue DOT ID  */
 #line 110 "tiger.y"
                                  { (yyval.var) = A_FieldVar(EM_tokPos, (yyvsp[-2].var), S_Symbol((yyvsp[0].sval))); }
-#line 1416 "tiger.tab.c"
+#line 1573 "y.tab.c"
     break;
 
   case 27: /* func_call: ID LPAREN explist RPAREN  */
 #line 112 "tiger.y"
                                     { (yyval.exp) = A_CallExp(EM_tokPos, S_Symbol((yyvsp[-3].sval)), (yyvsp[-1].explist)); }
-#line 1422 "tiger.tab.c"
+#line 1579 "y.tab.c"
     break;
 
   case 28: /* explist: %empty  */
 #line 114 "tiger.y"
                           { (yyval.explist) = NULL; }
-#line 1428 "tiger.tab.c"
+#line 1585 "y.tab.c"
     break;
 
   case 29: /* explist: explist_nonempty  */
 #line 115 "tiger.y"
                           { (yyval.explist) = (yyvsp[0].explist); }
-#line 1434 "tiger.tab.c"
+#line 1591 "y.tab.c"
     break;
 
   case 30: /* explist_nonempty: exp  */
 #line 117 "tiger.y"
                                              { (yyval.explist) = A_ExpList((yyvsp[0].exp), NULL); }
-#line 1440 "tiger.tab.c"
+#line 1597 "y.tab.c"
     break;
 
   case 31: /* explist_nonempty: explist_nonempty COMMA exp  */
 #line 118 "tiger.y"
                                              { (yyval.explist) = A_ExpList((yyvsp[0].exp), (yyvsp[-2].explist)); }
-#line 1446 "tiger.tab.c"
+#line 1603 "y.tab.c"
     break;
 
   case 32: /* arith_exp: exp PLUS exp  */
 #line 120 "tiger.y"
                           { (yyval.exp) = A_OpExp(EM_tokPos, A_plusOp, (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1452 "tiger.tab.c"
+#line 1609 "y.tab.c"
     break;
 
   case 33: /* arith_exp: exp MINUS exp  */
 #line 121 "tiger.y"
                           { (yyval.exp) = A_OpExp(EM_tokPos, A_minusOp, (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1458 "tiger.tab.c"
+#line 1615 "y.tab.c"
     break;
 
   case 34: /* arith_exp: exp TIMES exp  */
 #line 122 "tiger.y"
                           { (yyval.exp) = A_OpExp(EM_tokPos, A_timesOp, (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1464 "tiger.tab.c"
+#line 1621 "y.tab.c"
     break;
 
   case 35: /* arith_exp: exp DIVIDE exp  */
 #line 123 "tiger.y"
                           { (yyval.exp) = A_OpExp(EM_tokPos, A_divideOp, (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1470 "tiger.tab.c"
+#line 1627 "y.tab.c"
     break;
 
   case 36: /* cmp_exp: exp EQ exp  */
 #line 125 "tiger.y"
                      { (yyval.exp) = A_OpExp(EM_tokPos, A_eqOp, (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1476 "tiger.tab.c"
+#line 1633 "y.tab.c"
     break;
 
   case 37: /* cmp_exp: exp NEQ exp  */
 #line 126 "tiger.y"
                      { (yyval.exp) = A_OpExp(EM_tokPos, A_neqOp, (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1482 "tiger.tab.c"
+#line 1639 "y.tab.c"
     break;
 
   case 38: /* cmp_exp: exp LT exp  */
 #line 127 "tiger.y"
                      { (yyval.exp) = A_OpExp(EM_tokPos, A_ltOp, (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1488 "tiger.tab.c"
+#line 1645 "y.tab.c"
     break;
 
   case 39: /* cmp_exp: exp LE exp  */
 #line 128 "tiger.y"
                      { (yyval.exp) = A_OpExp(EM_tokPos, A_leOp, (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1494 "tiger.tab.c"
+#line 1651 "y.tab.c"
     break;
 
   case 40: /* cmp_exp: exp GT exp  */
 #line 129 "tiger.y"
                      { (yyval.exp) = A_OpExp(EM_tokPos, A_gtOp, (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1500 "tiger.tab.c"
+#line 1657 "y.tab.c"
     break;
 
   case 41: /* cmp_exp: exp GE exp  */
 #line 130 "tiger.y"
                      { (yyval.exp) = A_OpExp(EM_tokPos, A_geOp, (yyvsp[-2].exp), (yyvsp[0].exp)); }
-#line 1506 "tiger.tab.c"
+#line 1663 "y.tab.c"
     break;
 
   case 42: /* bool_exp: exp AND exp  */
 #line 132 "tiger.y"
                       { (yyval.exp) = A_IfExp(EM_tokPos, (yyvsp[-2].exp), (yyvsp[0].exp), A_IntExp(EM_tokPos, 0)); }
-#line 1512 "tiger.tab.c"
+#line 1669 "y.tab.c"
     break;
 
   case 43: /* bool_exp: exp OR exp  */
 #line 133 "tiger.y"
                       { (yyval.exp) = A_IfExp(EM_tokPos, (yyvsp[-2].exp), A_IntExp(EM_tokPos, 1), (yyvsp[0].exp)); }
-#line 1518 "tiger.tab.c"
+#line 1675 "y.tab.c"
     break;
 
   case 44: /* record_create: ID LBRACE record_create_list RBRACE  */
 #line 135 "tiger.y"
                                                    { (yyval.exp) = A_RecordExp(EM_tokPos, S_Symbol((yyvsp[-3].sval)), (yyvsp[-1].efieldlist)); }
-#line 1524 "tiger.tab.c"
+#line 1681 "y.tab.c"
     break;
 
   case 45: /* record_create_list: %empty  */
 #line 137 "tiger.y"
                     { (yyval.efieldlist) = NULL; }
-#line 1530 "tiger.tab.c"
+#line 1687 "y.tab.c"
     break;
 
   case 46: /* record_create_list: record_create_list_nonempty  */
 #line 138 "tiger.y"
                                                 { (yyval.efieldlist) = (yyvsp[0].efieldlist); }
-#line 1536 "tiger.tab.c"
+#line 1693 "y.tab.c"
     break;
 
   case 47: /* record_create_list_nonempty: record_create_field  */
 #line 140 "tiger.y"
                                                  { (yyval.efieldlist) = A_EfieldList((yyvsp[0].efield), NULL); }
-#line 1542 "tiger.tab.c"
+#line 1699 "y.tab.c"
     break;
 
   case 48: /* record_create_list_nonempty: record_create_list_nonempty COMMA record_create_field  */
 #line 141 "tiger.y"
                                                                                    { (yyval.efieldlist) = A_EfieldList((yyvsp[0].efield), (yyvsp[-2].efieldlist)); }
-#line 1548 "tiger.tab.c"
+#line 1705 "y.tab.c"
     break;
 
   case 49: /* record_create_field: ID EQ exp  */
 #line 143 "tiger.y"
                                { (yyval.efield) = A_Efield(S_Symbol((yyvsp[-2].sval)), (yyvsp[0].exp)); }
-#line 1554 "tiger.tab.c"
+#line 1711 "y.tab.c"
     break;
 
   case 50: /* array_create: ID LBRACK exp RBRACK OF exp  */
 #line 145 "tiger.y"
                                           { (yyval.exp) = A_ArrayExp(EM_tokPos, S_Symbol((yyvsp[-5].sval)), (yyvsp[-3].exp), (yyvsp[0].exp)); }
-#line 1560 "tiger.tab.c"
+#line 1717 "y.tab.c"
     break;
 
   case 51: /* decs: %empty  */
 #line 147 "tiger.y"
                { (yyval.declist) = NULL; }
-#line 1566 "tiger.tab.c"
+#line 1723 "y.tab.c"
     break;
 
   case 52: /* decs: decs dec  */
 #line 148 "tiger.y"
                { (yyval.declist) = A_DecList((yyvsp[0].dec), (yyvsp[-1].declist)); }
-#line 1572 "tiger.tab.c"
+#line 1729 "y.tab.c"
     break;
 
   case 53: /* dec: tydeclist  */
 #line 150 "tiger.y"
                 { (yyval.dec) = (yyvsp[0].dec); }
-#line 1578 "tiger.tab.c"
+#line 1735 "y.tab.c"
     break;
 
   case 54: /* dec: vardec  */
 #line 151 "tiger.y"
                 { (yyval.dec) = (yyvsp[0].dec); }
-#line 1584 "tiger.tab.c"
+#line 1741 "y.tab.c"
     break;
 
   case 55: /* dec: fundeclist  */
 #line 152 "tiger.y"
                 { (yyval.dec) = (yyvsp[0].dec); }
-#line 1590 "tiger.tab.c"
+#line 1747 "y.tab.c"
     break;
 
   case 56: /* tydeclist: tydec  */
 #line 154 "tiger.y"
                            { (yyval.dec) = A_TypeDec(EM_tokPos, A_NametyList((yyvsp[0].namety), NULL)); }
-#line 1596 "tiger.tab.c"
+#line 1753 "y.tab.c"
     break;
 
   case 57: /* tydeclist: tydec tydeclist  */
 #line 155 "tiger.y"
                            { (yyval.dec) = A_TypeDec(EM_tokPos, A_NametyList((yyvsp[-1].namety), (yyvsp[0].dec)->u.type)); }
-#line 1602 "tiger.tab.c"
+#line 1759 "y.tab.c"
     break;
 
   case 58: /* tydec: TYPE ID EQ ty  */
 #line 157 "tiger.y"
                            { (yyval.namety) = A_Namety(S_Symbol((yyvsp[-2].sval)), (yyvsp[0].ty)); }
-#line 1608 "tiger.tab.c"
+#line 1765 "y.tab.c"
     break;
 
   case 59: /* ty: ID  */
 #line 159 "tiger.y"
                            { (yyval.ty) = A_NameTy(EM_tokPos, S_Symbol((yyvsp[0].sval))); }
-#line 1614 "tiger.tab.c"
+#line 1771 "y.tab.c"
     break;
 
   case 60: /* ty: LBRACE tyfields RBRACE  */
 #line 160 "tiger.y"
                            { (yyval.ty) = A_RecordTy(EM_tokPos, (yyvsp[-1].fieldlist)); }
-#line 1620 "tiger.tab.c"
+#line 1777 "y.tab.c"
     break;
 
   case 61: /* ty: ARRAY OF ID  */
 #line 161 "tiger.y"
                            { (yyval.ty) = A_ArrayTy(EM_tokPos, S_Symbol((yyvsp[0].sval))); }
-#line 1626 "tiger.tab.c"
+#line 1783 "y.tab.c"
     break;
 
   case 62: /* tyfields: %empty  */
 #line 163 "tiger.y"
                             { (yyval.fieldlist) = NULL; }
-#line 1632 "tiger.tab.c"
+#line 1789 "y.tab.c"
     break;
 
   case 63: /* tyfields: tyfields_nonempty  */
 #line 164 "tiger.y"
                             { (yyval.fieldlist) = (yyvsp[0].fieldlist); }
-#line 1638 "tiger.tab.c"
+#line 1795 "y.tab.c"
     break;
 
   case 64: /* tyfields_nonempty: tyfield  */
 #line 166 "tiger.y"
                                                    { (yyval.fieldlist) = A_FieldList((yyvsp[0].field), NULL); }
-#line 1644 "tiger.tab.c"
+#line 1801 "y.tab.c"
     break;
 
   case 65: /* tyfields_nonempty: tyfields_nonempty COMMA tyfield  */
 #line 167 "tiger.y"
                                                    { (yyval.fieldlist) = A_FieldList((yyvsp[0].field), (yyvsp[-2].fieldlist)); }
-#line 1650 "tiger.tab.c"
+#line 1807 "y.tab.c"
     break;
 
   case 66: /* tyfield: ID COLON ID  */
 #line 169 "tiger.y"
                      { (yyval.field) = A_Field(EM_tokPos, S_Symbol((yyvsp[-2].sval)), S_Symbol((yyvsp[0].sval))); }
-#line 1656 "tiger.tab.c"
+#line 1813 "y.tab.c"
     break;
 
   case 67: /* vardec: VAR ID ASSIGN exp  */
 #line 171 "tiger.y"
                                    { (yyval.dec) = A_VarDec(EM_tokPos, S_Symbol((yyvsp[-2].sval)), NULL, (yyvsp[0].exp)); }
-#line 1662 "tiger.tab.c"
+#line 1819 "y.tab.c"
     break;
 
   case 68: /* vardec: VAR ID COLON ID ASSIGN exp  */
 #line 172 "tiger.y"
                                    { (yyval.dec) = A_VarDec(EM_tokPos, S_Symbol((yyvsp[-4].sval)), S_Symbol((yyvsp[-2].sval)), (yyvsp[0].exp)); }
-#line 1668 "tiger.tab.c"
+#line 1825 "y.tab.c"
     break;
 
   case 69: /* fundeclist: fundec  */
 #line 174 "tiger.y"
                               { (yyval.dec) = A_FunctionDec(EM_tokPos, A_FundecList((yyvsp[0].fundec), NULL)); }
-#line 1674 "tiger.tab.c"
+#line 1831 "y.tab.c"
     break;
 
   case 70: /* fundeclist: fundec fundeclist  */
 #line 175 "tiger.y"
                               { (yyval.dec) = A_FunctionDec(EM_tokPos, A_FundecList((yyvsp[-1].fundec), (yyvsp[0].dec)->u.function)); }
-#line 1680 "tiger.tab.c"
+#line 1837 "y.tab.c"
     break;
 
   case 71: /* fundec: FUNCTION ID LPAREN tyfields RPAREN EQ exp  */
 #line 177 "tiger.y"
                                                            { (yyval.fundec) = A_Fundec(EM_tokPos, S_Symbol((yyvsp[-5].sval)), (yyvsp[-3].fieldlist), NULL, (yyvsp[0].exp)); }
-#line 1686 "tiger.tab.c"
+#line 1843 "y.tab.c"
     break;
 
   case 72: /* fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp  */
 #line 178 "tiger.y"
                                                            { (yyval.fundec) = A_Fundec(EM_tokPos, S_Symbol((yyvsp[-7].sval)), (yyvsp[-5].fieldlist), S_Symbol((yyvsp[-2].sval)), (yyvsp[0].exp)); }
-#line 1692 "tiger.tab.c"
+#line 1849 "y.tab.c"
     break;
 
   case 73: /* expseq: exp  */
 #line 180 "tiger.y"
                              { (yyval.explist) = A_ExpList((yyvsp[0].exp), NULL); }
-#line 1698 "tiger.tab.c"
+#line 1855 "y.tab.c"
     break;
 
   case 74: /* expseq: expseq SEMICOLON exp  */
 #line 181 "tiger.y"
                              { (yyval.explist) = A_ExpList((yyvsp[0].exp), (yyvsp[-2].explist)); }
-#line 1704 "tiger.tab.c"
+#line 1861 "y.tab.c"
     break;
 
 
-#line 1708 "tiger.tab.c"
+#line 1865 "y.tab.c"
 
       default: break;
     }
