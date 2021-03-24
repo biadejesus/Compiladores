@@ -530,25 +530,20 @@ char *yytext;
 #include "y.tab.h"
 #include "errormsg.h"
 
-/* comments allow to be nested, the more nested, the higher comment level */
 int comment_level=0;
 
-/* string literal variable */
 const int INITIAL_STRING_LENGTH = 32;
 int STRING_LENGTH_CAPACITY;
 string string_buffer;
 
-/* 字符串初始化 */
 static void init_string_buffer() {
   string_buffer = checked_malloc(INITIAL_STRING_LENGTH);
   STRING_LENGTH_CAPACITY = INITIAL_STRING_LENGTH;
   string_buffer[0] = '\0';
 }
 
-/* 逐个添加字符到字符串中 */
 static void append_to_buffer(char c) {
   int new_length = strlen(string_buffer) + 1;
-  /* test空间不足时 double空间 */
   if(new_length >= STRING_LENGTH_CAPACITY) {
     char *tmp = string_buffer;
     STRING_LENGTH_CAPACITY *= 2;
@@ -568,7 +563,7 @@ int yywrap(void) {
 
 void adjust(void) {
   EM_tokPos=charPos;
-  charPos+=yyleng; // yyleng为lex每次提取的token长度
+  charPos+=yyleng; 
 }
 
 #line 574 "lex.yy.c"
@@ -580,10 +575,7 @@ void adjust(void) {
 #define INSTRING 2
 
 #ifndef YY_NO_UNISTD_H
-/* Special case for "unistd.h", since it is non-ANSI. We include it way
- * down here because we want the user's section 1 to have been scanned first.
- * The user has a chance to override it with an option.
- */
+
 #include <unistd.h>
 #endif
 
@@ -592,9 +584,6 @@ void adjust(void) {
 #endif
 
 static int yy_init_globals ( void );
-
-/* Accessor methods to globals.
-   These are made visible to non-reentrant scanners for convenience. */
 
 int yylex_destroy ( void );
 
@@ -621,10 +610,6 @@ char *yyget_text ( void );
 int yyget_lineno ( void );
 
 void yyset_lineno ( int _line_number  );
-
-/* Macros after this point can all be overridden by user definitions in
- * section 1.
- */
 
 #ifndef YY_SKIP_YYWRAP
 #ifdef __cplusplus

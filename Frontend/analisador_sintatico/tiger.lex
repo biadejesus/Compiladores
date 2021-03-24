@@ -5,25 +5,20 @@
 #include "y.tab.h"
 #include "errormsg.h"
 
-/* comments allow to be nested, the more nested, the higher comment level */
 int comment_level=0;
 
-/* string literal variable */
 const int INITIAL_STRING_LENGTH = 32;
 int STRING_LENGTH_CAPACITY;
 string string_buffer;
 
-/* 字符串初始化 */
 static void init_string_buffer() {
   string_buffer = checked_malloc(INITIAL_STRING_LENGTH);
   STRING_LENGTH_CAPACITY = INITIAL_STRING_LENGTH;
   string_buffer[0] = '\0';
 }
 
-/* 逐个添加字符到字符串中 */
 static void append_to_buffer(char c) {
   int new_length = strlen(string_buffer) + 1;
-  /* test空间不足时 double空间 */
   if(new_length >= STRING_LENGTH_CAPACITY) {
     char *tmp = string_buffer;
     STRING_LENGTH_CAPACITY *= 2;
