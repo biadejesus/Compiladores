@@ -5,24 +5,24 @@
 #include "y.tab.h"
 #include "errormsg.h"
 
-int comment_level=0;
+int count_comment=0;
 
-const int INITIAL_STRING_LENGTH = 32;
-int STRING_LENGTH_CAPACITY;
+const int TAM_STRING = 32;
+int CAPACIDADE_STRING;
 string string_buffer;
 
 static void init_string_buffer() {
-  string_buffer = checked_malloc(INITIAL_STRING_LENGTH);
-  STRING_LENGTH_CAPACITY = INITIAL_STRING_LENGTH;
+  string_buffer = checked_malloc(TAM_STRING);
+  CAPACIDADE_STRING = TAM_STRING;
   string_buffer[0] = '\0';
 }
 
 static void append_to_buffer(char c) {
   int new_length = strlen(string_buffer) + 1;
-  if(new_length >= STRING_LENGTH_CAPACITY) {
+  if(new_length >= CAPACIDADE_STRING) {
     char *tmp = string_buffer;
-    STRING_LENGTH_CAPACITY *= 2;
-    string_buffer = checked_malloc(STRING_LENGTH_CAPACITY);
+    CAPACIDADE_STRING *= 2;
+    string_buffer = checked_malloc(CAPACIDADE_STRING);
     strcpy(string_buffer, tmp);
   }
   string_buffer[new_length-1] = c;
@@ -38,68 +38,69 @@ int yywrap(void) {
 
 void adjust(void) {
   EM_tokPos=charPos;
-  charPos+=yyleng; // yyleng为lex每次提取的token长度
+  charPos+=yyleng; 
 }
 
 %}
 
 %START COMMENT INSTRING
 %%
-  /* ignore characters */
-<INITIAL>[ \t\r]	{adjust(); continue;}
+<INITIAL>
+/* ignore characters */
+[ \t\r]	{adjust(); continue;}
 
   /* newline */
-<INITIAL>\n       {adjust(); EM_newline(); continue;}
+\n       {adjust(); EM_newline(); continue;}
 
   /* punctuation symbols */
-<INITIAL>","	  {adjust(); return COMMA;}
-<INITIAL>":"    {adjust(); return COLON;}
-<INITIAL>";"    {adjust(); return SEMICOLON;}
-<INITIAL>"("    {adjust(); return LPAREN;}
-<INITIAL>")"    {adjust(); return RPAREN;}
-<INITIAL>"["    {adjust(); return LBRACK;}
-<INITIAL>"]"    {adjust(); return RBRACK;}
-<INITIAL>"{"    {adjust(); return LBRACE;}
-<INITIAL>"}"    {adjust(); return RBRACE;}
-<INITIAL>"."    {adjust(); return DOT;}
-<INITIAL>"+"    {adjust(); return PLUS;}
-<INITIAL>"-"    {adjust(); return MINUS;}
-<INITIAL>"*"    {adjust(); return TIMES;}
-<INITIAL>"/"    {adjust(); return DIVIDE;}
-<INITIAL>"="    {adjust(); return EQ;}
-<INITIAL>"<>"   {adjust(); return NEQ;}
-<INITIAL>"<"    {adjust(); return LT;}
-<INITIAL>"<="   {adjust(); return LE;}
-<INITIAL>">"    {adjust(); return GT;}
-<INITIAL>">="   {adjust(); return GE;}
-<INITIAL>"&"    {adjust(); return AND;}
-<INITIAL>"|"    {adjust(); return OR;}
-<INITIAL>":="   {adjust(); return ASSIGN;}
+","	  {adjust(); return COMMA;}
+":"    {adjust(); return COLON;}
+";"    {adjust(); return SEMICOLON;}
+"("    {adjust(); return LPAREN;}
+")"    {adjust(); return RPAREN;}
+"["    {adjust(); return LBRACK;}
+"]"    {adjust(); return RBRACK;}
+"{"    {adjust(); return LBRACE;}
+"}"    {adjust(); return RBRACE;}
+"."    {adjust(); return DOT;}
+"+"    {adjust(); return PLUS;}
+"-"    {adjust(); return MINUS;}
+"*"    {adjust(); return TIMES;}
+"/"    {adjust(); return DIVIDE;}
+"="    {adjust(); return EQ;}
+"<>"   {adjust(); return NEQ;}
+"<"    {adjust(); return LT;}
+"<="   {adjust(); return LE;}
+">"    {adjust(); return GT;}
+">="   {adjust(); return GE;}
+"&"    {adjust(); return AND;}
+"|"    {adjust(); return OR;}
+":="   {adjust(); return ASSIGN;}
 
   /* reserved words */
-<INITIAL>array    {adjust(); return ARRAY;}
-<INITIAL>if       {adjust(); return IF;}
-<INITIAL>then     {adjust(); return THEN;}
-<INITIAL>else     {adjust(); return ELSE;}
-<INITIAL>while    {adjust(); return WHILE;}
-<INITIAL>for  	  {adjust(); return FOR;}
-<INITIAL>to       {adjust(); return TO;}
-<INITIAL>do       {adjust(); return DO;}
-<INITIAL>let      {adjust(); return LET;}
-<INITIAL>in       {adjust(); return IN;}
-<INITIAL>end      {adjust(); return END;}
-<INITIAL>of       {adjust(); return OF;}
-<INITIAL>break    {adjust(); return BREAK;}
-<INITIAL>nil      {adjust(); return NIL;}
-<INITIAL>function {adjust(); return FUNCTION;}
-<INITIAL>var      {adjust(); return VAR;}
-<INITIAL>type     {adjust(); return TYPE;}
+array    {adjust(); return ARRAY;}
+if       {adjust(); return IF;}
+then     {adjust(); return THEN;}
+else     {adjust(); return ELSE;}
+while    {adjust(); return WHILE;}
+for  	  {adjust(); return FOR;}
+to       {adjust(); return TO;}
+do       {adjust(); return DO;}
+let      {adjust(); return LET;}
+in       {adjust(); return IN;}
+end      {adjust(); return END;}
+of       {adjust(); return OF;}
+break    {adjust(); return BREAK;}
+nil      {adjust(); return NIL;}
+function {adjust(); return FUNCTION;}
+var      {adjust(); return VAR;}
+type     {adjust(); return TYPE;}
 
   /* identifier */
-<INITIAL>[a-zA-Z][a-zA-Z0-9_]* {adjust(); yylval.sval=String(yytext); return ID;}
+[a-zA-Z][a-zA-Z0-9_]* {adjust(); yylval.sval=String(yytext); return ID;}
 
   /* string literal */
-<INITIAL>\"   {adjust(); init_string_buffer(); BEGIN INSTRING;}
+\"   {adjust(); init_string_buffer(); BEGIN INSTRING;}
 <INSTRING>\"  {adjust(); yylval.sval = String(string_buffer); BEGIN 0; return STRING;}
 <INSTRING>\n  {adjust(); EM_error(EM_tokPos,"unclose string: newline appear in string"); yyterminate();}
 <INSTRING><<EOF>> {adjust(); EM_error(EM_tokPos,"unclose string"); yyterminate();}
@@ -117,13 +118,13 @@ void adjust(void) {
 <INSTRING>[^\\\n\"]* {adjust(); char *tmp = yytext; while(*tmp) append_to_buffer(*tmp++);}
 
   /* integer literal */
-<INITIAL>[0-9]+	 {adjust(); yylval.ival=atoi(yytext); return INT;}
+[0-9]+	 {adjust(); yylval.ival=atoi(yytext); return INT;}
 
   /* comment part */
-"/*" {adjust(); comment_level+=1; BEGIN COMMENT;}
-<COMMENT>"*/" {adjust(); comment_level-=1; if(comment_level==0) BEGIN 0;}
+"/*" {adjust(); count_comment+=1; BEGIN COMMENT;}
+<COMMENT>"*/" {adjust(); count_comment-=1; if(count_comment==0) BEGIN 0;}
 <COMMENT><<EOF>> {adjust(); EM_error(EM_tokPos,"unclose comment"); yyterminate();}
 <COMMENT>.    {adjust();}
 
   /* unknown input */
-<INITIAL>.	 {adjust(); EM_error(EM_tokPos,"illegal token");}
+.	 {adjust(); EM_error(EM_tokPos,"illegal token");}
