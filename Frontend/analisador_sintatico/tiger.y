@@ -5,7 +5,7 @@
 #include "absyn.h"
 #include "symbol.h"
 
-int yylex(void); /* function prototype */
+int yylex(void);
 
 void yyerror(char *s) {
   EM_error(EM_tokPos, "%s", s);
@@ -61,9 +61,10 @@ A_exp absyn_root;
   ARRAY IF THEN ELSE WHILE FOR TO DO LET IN END OF 
   BREAK NIL
   FUNCTION VAR TYPE
+  SWITCH CASE
 
 %type <var> lvalue
-%type <exp> program exp func_call arith_exp cmp_exp bool_exp record_create array_create
+%type <exp> program exp func_call arith_exp cmp_exp bool_exp record_create array_create case
 %type <dec> dec tydeclist vardec fundeclist
 %type <ty> ty
 %type <declist> decs

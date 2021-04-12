@@ -5,13 +5,13 @@
 #include "y.tab.h"
 #include "errormsg.h"
 
-int count_comment=0;
+int contador_comment=0;
 
 const int TAM_STRING = 32;
 int CAPACIDADE_STRING;
 string string_buffer;
 
-static void init_string_buffer() {
+static void buffer() {
   string_buffer = checked_malloc(TAM_STRING);
   CAPACIDADE_STRING = TAM_STRING;
   string_buffer[0] = '\0';
@@ -46,13 +46,8 @@ void adjust(void) {
 %START COMMENT INSTRING
 %%
 <INITIAL>
-/* ignore characters */
 [ \t\r]	{adjust(); continue;}
-
-  /* newline */
 \n       {adjust(); EM_newline(); continue;}
-
-  /* punctuation symbols */
 ","	  {adjust(); return COMMA;}
 ":"    {adjust(); return COLON;}
 ";"    {adjust(); return SEMICOLON;}
@@ -77,7 +72,8 @@ void adjust(void) {
 "|"    {adjust(); return OR;}
 ":="   {adjust(); return ASSIGN;}
 
-  /* reserved words */
+switch {adjust(); return SWITCH;}
+case {adjust(); return CASE;}
 array    {adjust(); return ARRAY;}
 if       {adjust(); return IF;}
 then     {adjust(); return THEN;}
@@ -100,14 +96,13 @@ type     {adjust(); return TYPE;}
 [a-zA-Z][a-zA-Z0-9_]* {adjust(); yylval.sval=String(yytext); return ID;}
 
   /* string literal */
-\"   {adjust(); init_string_buffer(); BEGIN INSTRING;}
+\"   {adjust(); buffer(); BEGIN INSTRING;}
 <INSTRING>\"  {adjust(); yylval.sval = String(string_buffer); BEGIN 0; return STRING;}
 <INSTRING>\n  {adjust(); EM_error(EM_tokPos,"unclose string: newline appear in string"); yyterminate();}
 <INSTRING><<EOF>> {adjust(); EM_error(EM_tokPos,"unclose string"); yyterminate();}
 <INSTRING>\\[0-9]{3} {adjust(); int tmp; sscanf(yytext+1, "%d", &tmp);
-                      if(tmp > 0xff) { EM_error(EM_tokPos,"ascii code out of range"); yyterminate(); }
-                      append_to_buffer(tmp);
-                      }
+   if(tmp > 0xff) { EM_error(EM_tokPos,"ascii code out of range"); yyterminate(); }
+   append_to_buffer(tmp);}
 <INSTRING>\\[0-9]+ {adjust(); EM_error(EM_tokPos,"bad escape sequence"); yyterminate();}
 <INSTRING>\\n {adjust(); append_to_buffer('\n');}
 <INSTRING>\\t {adjust(); append_to_buffer('\t');}
@@ -117,12 +112,12 @@ type     {adjust(); return TYPE;}
 <INSTRING>\\[ \n\t\f]+\\ {adjust(); int i; for(i = 0; yytext[i]; ++i) if(yytext[i] == '\n') EM_newline(); continue;}
 <INSTRING>[^\\\n\"]* {adjust(); char *tmp = yytext; while(*tmp) append_to_buffer(*tmp++);}
 
-  /* integer literal */
+  /* integer */
 [0-9]+	 {adjust(); yylval.ival=atoi(yytext); return INT;}
 
-  /* comment part */
-"/*" {adjust(); count_comment+=1; BEGIN COMMENT;}
-<COMMENT>"*/" {adjust(); count_comment-=1; if(count_comment==0) BEGIN 0;}
+  /* comment  */
+"/*" {adjust(); contador_comment+=1; BEGIN COMMENT;}
+<COMMENT>"*/" {adjust(); contador_comment-=1; if(contador_comment==0) BEGIN 0;}
 <COMMENT><<EOF>> {adjust(); EM_error(EM_tokPos,"unclose comment"); yyterminate();}
 <COMMENT>.    {adjust();}
 
