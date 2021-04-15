@@ -20,7 +20,7 @@ string toknames[] = {
 
 
 string tokname(int tok) {
-  return tok<258 || tok>302 ? "BAD_TOKEN" : toknames[tok-258];
+  return tok<258 || tok>304 ? "BAD_TOKEN" : toknames[tok-258];
 }
 
 int main(int argc, char **argv) {

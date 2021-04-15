@@ -98,7 +98,9 @@ extern int yydebug;
     NIL = 299,                     /* NIL  */
     FUNCTION = 300,                /* FUNCTION  */
     VAR = 301,                     /* VAR  */
-    TYPE = 302                     /* TYPE  */
+    TYPE = 302,                    /* TYPE  */
+    SWITCH = 303,                  /* SWITCH  */
+    CASE = 304                     /* CASE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -128,7 +130,7 @@ union YYSTYPE
   A_efieldList efieldlist;
   
 
-#line 132 "tiger.tab.h"
+#line 134 "tiger.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

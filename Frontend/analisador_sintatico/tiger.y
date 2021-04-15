@@ -64,7 +64,7 @@ A_exp absyn_root;
   SWITCH CASE
 
 %type <var> lvalue
-%type <exp> program exp func_call arith_exp cmp_exp bool_exp record_create array_create case
+%type <exp> program exp func_call arith_exp cmp_exp bool_exp record_create array_create
 %type <dec> dec tydeclist vardec fundeclist
 %type <ty> ty
 %type <declist> decs
@@ -104,6 +104,11 @@ exp: lvalue { $$ = A_VarExp(EM_tokPos, $1); }
    | BREAK { $$ = A_BreakExp(EM_tokPos); }
    | LET decs IN expseq END { $$ = A_LetExp(EM_tokPos, $2, A_SeqExp(EM_tokPos, $4)); }
    | LPAREN expseq RPAREN { $$ = A_SeqExp(EM_tokPos, $2); }
+   | SWITCH exp LBRACE CASE COLON exp case RBRACE  { $$ = A_CaseExp(EM_tokPos, $2, $6, $7); }
+   ; 
+
+case:                         { $$ = NULL; }
+    | CASE COLON exp case     { $$ = A_CaseExp(EM_tokPos, $3, $4, NULL);}
 
 lvalue: ID                       { $$ = A_SimpleVar(EM_tokPos, S_Symbol($1)); }
       | ID LBRACK exp RBRACK     { $$ = A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3); }

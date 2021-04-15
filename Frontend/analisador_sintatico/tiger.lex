@@ -2,7 +2,7 @@
 #include <string.h>
 #include "util.h"
 #include "absyn.h"
-#include "y.tab.h"
+#include "tiger.tab.h"
 #include "errormsg.h"
 
 int contador_comment=0;
@@ -45,58 +45,57 @@ void adjust(void) {
 
 %START COMMENT INSTRING
 %%
-<INITIAL>
-[ \t\r]	{adjust(); continue;}
-\n       {adjust(); EM_newline(); continue;}
-","	  {adjust(); return COMMA;}
-":"    {adjust(); return COLON;}
-";"    {adjust(); return SEMICOLON;}
-"("    {adjust(); return LPAREN;}
-")"    {adjust(); return RPAREN;}
-"["    {adjust(); return LBRACK;}
-"]"    {adjust(); return RBRACK;}
-"{"    {adjust(); return LBRACE;}
-"}"    {adjust(); return RBRACE;}
-"."    {adjust(); return DOT;}
-"+"    {adjust(); return PLUS;}
-"-"    {adjust(); return MINUS;}
-"*"    {adjust(); return TIMES;}
-"/"    {adjust(); return DIVIDE;}
-"="    {adjust(); return EQ;}
-"<>"   {adjust(); return NEQ;}
-"<"    {adjust(); return LT;}
-"<="   {adjust(); return LE;}
-">"    {adjust(); return GT;}
-">="   {adjust(); return GE;}
-"&"    {adjust(); return AND;}
-"|"    {adjust(); return OR;}
-":="   {adjust(); return ASSIGN;}
+<INITIAL>[ \t\r]	{adjust(); continue;}
+<INITIAL>\n       {adjust(); EM_newline(); continue;}
+<INITIAL>","	  {adjust(); return COMMA;}
+<INITIAL>":"    {adjust(); return COLON;}
+<INITIAL>";"    {adjust(); return SEMICOLON;}
+<INITIAL>"("    {adjust(); return LPAREN;}
+<INITIAL>")"    {adjust(); return RPAREN;}
+<INITIAL>"["    {adjust(); return LBRACK;}
+<INITIAL>"]"    {adjust(); return RBRACK;}
+<INITIAL>"{"    {adjust(); return LBRACE;}
+<INITIAL>"}"    {adjust(); return RBRACE;}
+<INITIAL>"."    {adjust(); return DOT;}
+<INITIAL>"+"    {adjust(); return PLUS;}
+<INITIAL>"-"    {adjust(); return MINUS;}
+<INITIAL>"*"    {adjust(); return TIMES;}
+<INITIAL>"/"    {adjust(); return DIVIDE;}
+<INITIAL>"="    {adjust(); return EQ;}
+<INITIAL>"<>"   {adjust(); return NEQ;}
+<INITIAL>"<"    {adjust(); return LT;}
+<INITIAL>"<="   {adjust(); return LE;}
+<INITIAL>">"    {adjust(); return GT;}
+<INITIAL>">="   {adjust(); return GE;}
+<INITIAL>"&"    {adjust(); return AND;}
+<INITIAL>"|"    {adjust(); return OR;}
+<INITIAL>":="   {adjust(); return ASSIGN;}
 
-switch {adjust(); return SWITCH;}
-case {adjust(); return CASE;}
-array    {adjust(); return ARRAY;}
-if       {adjust(); return IF;}
-then     {adjust(); return THEN;}
-else     {adjust(); return ELSE;}
-while    {adjust(); return WHILE;}
-for  	  {adjust(); return FOR;}
-to       {adjust(); return TO;}
-do       {adjust(); return DO;}
-let      {adjust(); return LET;}
-in       {adjust(); return IN;}
-end      {adjust(); return END;}
-of       {adjust(); return OF;}
-break    {adjust(); return BREAK;}
-nil      {adjust(); return NIL;}
-function {adjust(); return FUNCTION;}
-var      {adjust(); return VAR;}
-type     {adjust(); return TYPE;}
+<INITIAL>switch {adjust(); return SWITCH;}
+<INITIAL>case {adjust(); return CASE;}
+<INITIAL>array    {adjust(); return ARRAY;}
+<INITIAL>if       {adjust(); return IF;}
+<INITIAL>then     {adjust(); return THEN;}
+<INITIAL>else     {adjust(); return ELSE;}
+<INITIAL>while    {adjust(); return WHILE;}
+<INITIAL>for  	  {adjust(); return FOR;}
+<INITIAL>to       {adjust(); return TO;}
+<INITIAL>do       {adjust(); return DO;}
+<INITIAL>let      {adjust(); return LET;}
+<INITIAL>in       {adjust(); return IN;}
+<INITIAL>end      {adjust(); return END;}
+<INITIAL>of       {adjust(); return OF;}
+<INITIAL>break    {adjust(); return BREAK;}
+<INITIAL>nil      {adjust(); return NIL;}
+<INITIAL>function {adjust(); return FUNCTION;}
+<INITIAL>var      {adjust(); return VAR;}
+<INITIAL>type     {adjust(); return TYPE;}
 
   /* identifier */
-[a-zA-Z][a-zA-Z0-9_]* {adjust(); yylval.sval=String(yytext); return ID;}
+<INITIAL>[a-zA-Z][a-zA-Z0-9_]* {adjust(); yylval.sval=String(yytext); return ID;}
 
   /* string literal */
-\"   {adjust(); buffer(); BEGIN INSTRING;}
+<INITIAL>\"   {adjust(); buffer(); BEGIN INSTRING;}
 <INSTRING>\"  {adjust(); yylval.sval = String(string_buffer); BEGIN 0; return STRING;}
 <INSTRING>\n  {adjust(); EM_error(EM_tokPos,"unclose string: newline appear in string"); yyterminate();}
 <INSTRING><<EOF>> {adjust(); EM_error(EM_tokPos,"unclose string"); yyterminate();}
@@ -113,7 +112,7 @@ type     {adjust(); return TYPE;}
 <INSTRING>[^\\\n\"]* {adjust(); char *tmp = yytext; while(*tmp) append_to_buffer(*tmp++);}
 
   /* integer */
-[0-9]+	 {adjust(); yylval.ival=atoi(yytext); return INT;}
+<INITIAL>[0-9]+	 {adjust(); yylval.ival=atoi(yytext); return INT;}
 
   /* comment  */
 "/*" {adjust(); contador_comment+=1; BEGIN COMMENT;}
@@ -122,4 +121,4 @@ type     {adjust(); return TYPE;}
 <COMMENT>.    {adjust();}
 
   /* unknown input */
-.	 {adjust(); EM_error(EM_tokPos,"illegal token");}
+<INITIAL>.	 {adjust(); EM_error(EM_tokPos,"illegal token");}

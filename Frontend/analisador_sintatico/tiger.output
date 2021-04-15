@@ -1,3 +1,9 @@
+Terminais sem uso na gramática
+
+    SWITCH
+    CASE
+
+
 Gramática
 
     0 $accept: program $end
@@ -151,88 +157,90 @@ Terminais, com as regras onde eles aparecem
     FUNCTION (300) 70 71
     VAR (301) 66 67
     TYPE (302) 57
+    SWITCH (303)
+    CASE (304)
 
 
 Não terminais com as regras onde eles aparecem
 
-    $accept (48)
+    $accept (50)
         à esquerda: 0
-    program <exp> (49)
+    program <exp> (51)
         à esquerda: 1
         à direita: 0
-    exp <exp> (50)
+    exp <exp> (52)
         à esquerda: 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
         à direita: 1 7 14 15 16 17 18 23 24 29 30 31 32 33 34 35 36 37 38 39 40 41 42 48 49 66 67 70 71 72 73
-    lvalue <var> (51)
+    lvalue <var> (53)
         à esquerda: 22 23 24 25
         à direita: 2 14 24 25
-    func_call <exp> (52)
+    func_call <exp> (54)
         à esquerda: 26
         à direita: 8
-    explist <explist> (53)
+    explist <explist> (55)
         à esquerda: 27 28
         à direita: 26
-    explist_nonempty <explist> (54)
+    explist_nonempty <explist> (56)
         à esquerda: 29 30
         à direita: 28 30
-    arith_exp <exp> (55)
+    arith_exp <exp> (57)
         à esquerda: 31 32 33 34
         à direita: 9
-    cmp_exp <exp> (56)
+    cmp_exp <exp> (58)
         à esquerda: 35 36 37 38 39 40
         à direita: 10
-    bool_exp <exp> (57)
+    bool_exp <exp> (59)
         à esquerda: 41 42
         à direita: 11
-    record_create <exp> (58)
+    record_create <exp> (60)
         à esquerda: 43
         à direita: 12
-    record_create_list <efieldlist> (59)
+    record_create_list <efieldlist> (61)
         à esquerda: 44 45
         à direita: 43
-    record_create_list_nonempty <efieldlist> (60)
+    record_create_list_nonempty <efieldlist> (62)
         à esquerda: 46 47
         à direita: 45 47
-    record_create_field <efield> (61)
+    record_create_field <efield> (63)
         à esquerda: 48
         à direita: 46 47
-    array_create <exp> (62)
+    array_create <exp> (64)
         à esquerda: 49
         à direita: 13
-    decs <declist> (63)
+    decs <declist> (65)
         à esquerda: 50 51
         à direita: 20 51
-    dec <dec> (64)
+    dec <dec> (66)
         à esquerda: 52 53 54
         à direita: 51
-    tydeclist <dec> (65)
+    tydeclist <dec> (67)
         à esquerda: 55 56
         à direita: 52 56
-    tydec <namety> (66)
+    tydec <namety> (68)
         à esquerda: 57
         à direita: 55 56
-    ty <ty> (67)
+    ty <ty> (69)
         à esquerda: 58 59 60
         à direita: 57
-    tyfields <fieldlist> (68)
+    tyfields <fieldlist> (70)
         à esquerda: 61 62
         à direita: 59 70 71
-    tyfields_nonempty <fieldlist> (69)
+    tyfields_nonempty <fieldlist> (71)
         à esquerda: 63 64
         à direita: 62 64
-    tyfield <field> (70)
+    tyfield <field> (72)
         à esquerda: 65
         à direita: 63 64
-    vardec <dec> (71)
+    vardec <dec> (73)
         à esquerda: 66 67
         à direita: 53
-    fundeclist <dec> (72)
+    fundeclist <dec> (74)
         à esquerda: 68 69
         à direita: 54 69
-    fundec <fundec> (73)
+    fundec <fundec> (75)
         à esquerda: 70 71
         à direita: 68 69
-    expseq <explist> (74)
+    expseq <explist> (76)
         à esquerda: 72 73
         à direita: 20 21 73
 

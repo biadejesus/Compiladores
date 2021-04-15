@@ -1,6 +1,7 @@
 # variable
 OBJECTS = lex.yy.o tiger.tab.o errormsg.o util.o absyn.o prabsyn.o symbol.o \
-          table.o parse.o
+          table.o parse.o \
+		#    tree.o printtree.o temp.o translate.o mipsframe.o
 
 # executable
 all: lextest parsetest absyntest
@@ -14,6 +15,9 @@ parsetest: parsetest.o $(OBJECTS)
 
 absyntest: absyntest.o $(OBJECTS)
 	cc -g -o $@ absyntest.o $(OBJECTS)
+
+# translatetest: translatetest.o $(OBJECTS)
+# 	cc -o $@ translatetest.o $(OBJECTS)
 
 # objects
 errormsg.o: errormsg.c errormsg.h util.h
@@ -40,6 +44,14 @@ tiger.tab.h: tiger.tab.c
 
 # absyn
 absyntest.o: absyntest.c errormsg.h util.h absyn.h symbol.h parse.h prabsyn.h
+
+# mipsframe.o: frame.h
+# temp.o: temp.h
+
+# translate.o: translate.h
+# tree.o: tree.h
+# printtree.o: printtree.h
+# translatetest.o: translatetest.c errormsg.h util.h absyn.h symbol.h frame.h
 
 .PHONY: clean
 clean:
