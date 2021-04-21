@@ -35,18 +35,18 @@ A_exp absyn_root;
   A_efieldList efieldlist;
   }
 
-%nonassoc LOW
-%nonassoc TYPE FUNCTION
-%nonassoc ID
-%nonassoc LBRACK
-%nonassoc DO OF
-%nonassoc THEN
-%nonassoc ELSE
+%left LOW
+%left TYPE FUNCTION
+%left ID
+%left LBRACK
+%left DO OF
+%left THEN
+%left ELSE
 %left SEMICOLON
-%nonassoc ASSIGN
+%left ASSIGN
 %left OR
 %left AND
-%nonassoc EQ NEQ LT LE GT GE
+%left EQ NEQ LT LE GT GE
 %left PLUS MINUS
 %left TIMES DIVIDE
 %left UMINUS
@@ -64,7 +64,7 @@ A_exp absyn_root;
   SWITCH CASE
 
 %type <var> lvalue
-%type <exp> program exp func_call arith_exp cmp_exp bool_exp record_create array_create
+%type <exp> program exp func_call arith_exp cmp_exp bool_exp record_create array_create loop_exp cond_exp switch_exp case case_list
 %type <dec> dec tydeclist vardec fundeclist
 %type <ty> ty
 %type <declist> decs
@@ -97,18 +97,29 @@ exp: lvalue { $$ = A_VarExp(EM_tokPos, $1); }
    | record_create { $$ = $1; }
    | array_create  { $$ = $1; }
    | lvalue ASSIGN exp { $$ = A_AssignExp(EM_tokPos, $1, $3); }
-   | IF exp THEN exp ELSE exp { $$ = A_IfExp(EM_tokPos, $2, $4, $6); }
-   | IF exp THEN exp { $$ = A_IfExp(EM_tokPos, $2, $4, NULL); }
-   | WHILE exp DO exp { $$ = A_WhileExp(EM_tokPos, $2, $4); }
-   | FOR ID ASSIGN exp TO exp DO exp { $$ = A_ForExp(EM_tokPos, S_Symbol($2), $4, $6, $8); }
+   | cond_exp     { $$ = $1; }
+   | loop_exp     { $$ = $1; }
    | BREAK { $$ = A_BreakExp(EM_tokPos); }
    | LET decs IN expseq END { $$ = A_LetExp(EM_tokPos, $2, A_SeqExp(EM_tokPos, $4)); }
    | LPAREN expseq RPAREN { $$ = A_SeqExp(EM_tokPos, $2); }
-   | SWITCH exp LBRACE CASE COLON exp case RBRACE  { $$ = A_CaseExp(EM_tokPos, $2, $6, $7); }
-   ; 
+   | switch_exp { $$ = $1; }
+    ;
 
-case:                         { $$ = NULL; }
-    | CASE COLON exp case     { $$ = A_CaseExp(EM_tokPos, $3, $4, NULL);}
+switch_exp: SWITCH exp LBRACE case_list RBRACE  { $$ = A_IfExp(EM_tokPos, $2, $4, NULL); }
+
+case_list: case
+          |case_list case
+
+case:                    { $$ = NULL; }
+    | CASE exp COLON exp     { $$ = A_IfExp(EM_tokPos, $2, $4, NULL);}
+    | CASE exp COLON explist     { $$ = A_IfExp(EM_tokPos, $2, $4, NULL);}
+
+
+cond_exp:   IF exp THEN exp ELSE exp { $$ = A_IfExp(EM_tokPos, $2, $4, $6); }
+      | IF exp THEN exp { $$ = A_IfExp(EM_tokPos, $2, $4, NULL); }
+
+loop_exp:  WHILE exp DO exp { $$ = A_WhileExp(EM_tokPos, $2, $4); }
+      | FOR ID ASSIGN exp TO exp DO exp { $$ = A_ForExp(EM_tokPos, S_Symbol($2), $4, $6, $8); }
 
 lvalue: ID                       { $$ = A_SimpleVar(EM_tokPos, S_Symbol($1)); }
       | ID LBRACK exp RBRACK     { $$ = A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3); }

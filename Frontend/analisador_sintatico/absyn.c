@@ -1,10 +1,5 @@
-/*
- * absyn.c - Abstract Syntax Functions. Most functions create an instance of an
- *           abstract syntax rule.
- */
-
 #include "util.h"
-#include "absyn.h"  /* abstract syntax data structures */
+#include "absyn.h" 
 
 A_var A_SimpleVar(A_pos pos, S_symbol sym)
 {A_var p = checked_malloc(sizeof(*p));
@@ -293,3 +288,12 @@ A_efieldList A_EfieldList(A_efield head, A_efieldList tail)
  return p;
 }
 
+A_exp A_SwitchExp(A_pos pos, A_decList decs, A_expList body)
+{
+  A_exp p = checked_malloc(sizeof(*p));
+  p->kind=A_switchExp;
+  p->pos=pos;
+  p->u.let.decs=decs;
+  p->u.let.body=body;
+  return p;
+}

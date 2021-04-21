@@ -1,4 +1,8 @@
+#ifndef TYPES_H__
+#define TYPES_H__
+
 #include "symbol.h"
+
 typedef struct Ty_ty_ *Ty_ty;
 typedef struct Ty_tyList_ *Ty_tyList;
 typedef struct Ty_field_ *Ty_field;
@@ -32,3 +36,4 @@ Ty_fieldList Ty_FieldList(Ty_field head, Ty_fieldList tail);
 void Ty_print(Ty_ty t);
 void TyList_print(Ty_tyList list);
 
+#endif

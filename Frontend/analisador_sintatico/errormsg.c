@@ -1,9 +1,3 @@
-/*
- * errormsg.c - functions used in all phases of the compiler to give
- *              error messages about the Tiger program.
- *
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -60,5 +54,5 @@ void EM_reset(string fname)
  anyErrors=0; fileName=fname; lineNum=1;
  linePos=intList(0,NULL);
  yyin = fopen(fname,"r");
- if (!yyin) {EM_error(0,"cannot open"); exit(1);}
+ if (!yyin) {EM_error(0,"nao pode abrir"); exit(1);}
 }

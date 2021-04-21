@@ -9,24 +9,24 @@ int contador_comment=0;
 
 const int TAM_STRING = 32;
 int CAPACIDADE_STRING;
-string string_buffer;
+string str_buff;
 
 static void buffer() {
-  string_buffer = checked_malloc(TAM_STRING);
+  str_buff = checked_malloc(TAM_STRING);
   CAPACIDADE_STRING = TAM_STRING;
-  string_buffer[0] = '\0';
+  str_buff[0] = '\0';
 }
 
-static void append_to_buffer(char c) {
-  int new_length = strlen(string_buffer) + 1;
+static void append(char c) {
+  int new_length = strlen(str_buff) + 1;
   if(new_length >= CAPACIDADE_STRING) {
-    char *tmp = string_buffer;
+    char *tmp = str_buff;
     CAPACIDADE_STRING *= 2;
-    string_buffer = checked_malloc(CAPACIDADE_STRING);
-    strcpy(string_buffer, tmp);
+    str_buff = checked_malloc(CAPACIDADE_STRING);
+    strcpy(str_buff, tmp);
   }
-  string_buffer[new_length-1] = c;
-  string_buffer[new_length] = '\0';
+  str_buff[new_length-1] = c;
+  str_buff[new_length] = '\0';
 }
 
 int charPos=1;
@@ -71,8 +71,8 @@ void adjust(void) {
 <INITIAL>"|"    {adjust(); return OR;}
 <INITIAL>":="   {adjust(); return ASSIGN;}
 
-<INITIAL>switch {adjust(); return SWITCH;}
-<INITIAL>case {adjust(); return CASE;}
+<INITIAL>switch   {adjust(); return SWITCH;}
+<INITIAL>case     {adjust(); return CASE;}
 <INITIAL>array    {adjust(); return ARRAY;}
 <INITIAL>if       {adjust(); return IF;}
 <INITIAL>then     {adjust(); return THEN;}
@@ -91,25 +91,25 @@ void adjust(void) {
 <INITIAL>var      {adjust(); return VAR;}
 <INITIAL>type     {adjust(); return TYPE;}
 
-  /* identifier */
+  /* id */
 <INITIAL>[a-zA-Z][a-zA-Z0-9_]* {adjust(); yylval.sval=String(yytext); return ID;}
 
-  /* string literal */
+  /* string */
 <INITIAL>\"   {adjust(); buffer(); BEGIN INSTRING;}
-<INSTRING>\"  {adjust(); yylval.sval = String(string_buffer); BEGIN 0; return STRING;}
+<INSTRING>\"  {adjust(); yylval.sval = String(str_buff); BEGIN 0; return STRING;}
 <INSTRING>\n  {adjust(); EM_error(EM_tokPos,"unclose string: newline appear in string"); yyterminate();}
 <INSTRING><<EOF>> {adjust(); EM_error(EM_tokPos,"unclose string"); yyterminate();}
 <INSTRING>\\[0-9]{3} {adjust(); int tmp; sscanf(yytext+1, "%d", &tmp);
    if(tmp > 0xff) { EM_error(EM_tokPos,"ascii code out of range"); yyterminate(); }
-   append_to_buffer(tmp);}
+   append(tmp);}
 <INSTRING>\\[0-9]+ {adjust(); EM_error(EM_tokPos,"bad escape sequence"); yyterminate();}
-<INSTRING>\\n {adjust(); append_to_buffer('\n');}
-<INSTRING>\\t {adjust(); append_to_buffer('\t');}
-<INSTRING>\\\\ {adjust(); append_to_buffer('\\');}
-<INSTRING>\\\" {adjust(); append_to_buffer('\"');}
-<INSTRING>\^[@A-Z\[\\\]\^_?] {adjust(); append_to_buffer(yytext[1]-'a');}
+<INSTRING>\\n {adjust(); append('\n');}
+<INSTRING>\\t {adjust(); append('\t');}
+<INSTRING>\\\\ {adjust(); append('\\');}
+<INSTRING>\\\" {adjust(); append('\"');}
+<INSTRING>\^[@A-Z\[\\\]\^_?] {adjust(); append(yytext[1]-'a');}
 <INSTRING>\\[ \n\t\f]+\\ {adjust(); int i; for(i = 0; yytext[i]; ++i) if(yytext[i] == '\n') EM_newline(); continue;}
-<INSTRING>[^\\\n\"]* {adjust(); char *tmp = yytext; while(*tmp) append_to_buffer(*tmp++);}
+<INSTRING>[^\\\n\"]* {adjust(); char *tmp = yytext; while(*tmp) append(*tmp++);}
 
   /* integer */
 <INITIAL>[0-9]+	 {adjust(); yylval.ival=atoi(yytext); return INT;}
