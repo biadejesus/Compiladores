@@ -15,7 +15,7 @@ string toknames[] = {
 "LT", "NEQ", "EQ", "MINUS", "PLUS", "DIVIDE", "TIMES", "UMINUS",
 "STRING", "INT", "COMMA", "COLON", "LPAREN", "RPAREN", "RBRACK",
 "LBRACE", "RBRACE", "DOT", "ARRAY", "IF", "WHILE", "FOR", "TO",
-"LET", "IN", "END", "BREAK", "NIL", "VAR"
+"LET", "IN", "END", "BREAK", "NIL", "VAR", "SWITCH", "CASE",
 };
 
 
@@ -25,10 +25,11 @@ string tokname(int tok) {
 
 int main(int argc, char **argv) {
  string fname; int tok;
- if (argc!=2) {fprintf(stderr,"usage: a.out filename\n"); exit(1);}
+ if (argc!=2) {fprintf(stderr,"uso: a.out nomearquivo\n"); exit(1);}
  fname=argv[1];
  EM_reset(fname);
  for(;;) {
+   
    tok=yylex();
    if (tok==0) break;
    switch(tok) {

@@ -1,10 +1,10 @@
 # variable
-OBJECTS = lex.yy.o tiger.tab.o errormsg.o util.o absyn.o prabsyn.o symbol.o \
-          table.o parse.o \
-		#    tree.o printtree.o temp.o translate.o mipsframe.o
+OBJECTS = lex.yy.o y.tab.o errormsg.o util.o absyn.o prabsyn.o symbol.o \
+          table.o parse.o env.o semant.o types.o mipsframe.o temp.o \
+		  translate.o escape.o tree.o printtree.o
 
 # executable
-all: lextest parsetest absyntest
+all: lextest parsetest absyntest typechecktest translatetest
 .PHONY: all
 
 lextest: lextest.o $(OBJECTS)
@@ -16,8 +16,11 @@ parsetest: parsetest.o $(OBJECTS)
 absyntest: absyntest.o $(OBJECTS)
 	cc -g -o $@ absyntest.o $(OBJECTS)
 
-# translatetest: translatetest.o $(OBJECTS)
-# 	cc -o $@ translatetest.o $(OBJECTS)
+typechecktest: typechecktest.o $(OBJECTS)
+	cc -o $@ typechecktest.o $(OBJECTS)
+
+translatetest: translatetest.o $(OBJECTS)
+	cc -o $@ translatetest.o $(OBJECTS)
 
 # objects
 errormsg.o: errormsg.c errormsg.h util.h
@@ -29,30 +32,39 @@ table.o: table.c table.h util.h
 parse.o: parse.c parse.h util.h errormsg.h symbol.h absyn.h
 
 # lex
-lextest.o: lextest.c absyn.h symbol.h tiger.tab.h errormsg.h util.h
-lex.yy.o: lex.yy.c tiger.tab.h errormsg.h util.h
+lextest.o: lextest.c absyn.h symbol.h y.tab.h errormsg.h util.h
+lex.yy.o: lex.yy.c y.tab.h errormsg.h util.h
 lex.yy.c: tiger.lex
-	flex tiger.lex
+	lex tiger.lex
 
 # parse
 parsetest.o: parsetest.c errormsg.h util.h absyn.h symbol.h
-tiger.tab.o: tiger.tab.c
-tiger.tab.c: tiger.y
-	bison -dv tiger.y
-tiger.tab.h: tiger.tab.c
-	echo "tiger.tab.h was created at the same time as tiger.tab.c"
+y.tab.o: y.tab.c
+y.tab.c: tiger.y
+	yacc -dv tiger.y
+y.tab.h: y.tab.c
+	echo "y.tab.h was created at the same time as y.tab.c"
 
 # absyn
 absyntest.o: absyntest.c errormsg.h util.h absyn.h symbol.h parse.h prabsyn.h
 
-# mipsframe.o: frame.h
-# temp.o: temp.h
+# type-check
+typechecktest.o: typechecktest.c errormsg.h util.h absyn.h symbol.h
+env.o: env.c env.h
+semant.o: semant.c semant.h
+types.o: types.c types.h
 
-# translate.o: translate.h
-# tree.o: tree.h
-# printtree.o: printtree.h
-# translatetest.o: translatetest.c errormsg.h util.h absyn.h symbol.h frame.h
+# frame
+mipsframe.o: frame.h
+temp.o: temp.h
+escape.o: escape.h
+
+# translate
+translate.o: translate.h
+tree.o: tree.h
+printtree.o: printtree.h
+translatetest.o: translatetest.c errormsg.h util.h absyn.h symbol.h frame.h
 
 .PHONY: clean
 clean:
-	rm -f *.o a.out lextest parsetest absyntest lex.yy.c y.output tiger.tab.c tiger.tab.h
+	rm -f *.o a.out lextest parsetest absyntest typechecktest translatetest lex.yy.c y.output y.tab.c y.tab.h

@@ -8,12 +8,14 @@
 #include "prabsyn.h"
 
 int main(int argc, char **argv) {
-  if (argc!=2) {fprintf(stderr,"usage: a.out filename\n"); exit(1);}
+  if (argc!=2) {fprintf(stderr,"uso: a.out nomearquivo\n"); exit(1);}
   A_exp absyn_tree_root = parse(argv[1]);
-  if(absyn_tree_root)
+  if(absyn_tree_root){
+    fprintf(stderr, "\n\n");
     pr_exp(stdout, absyn_tree_root, 0);
+  }
   else {
-    fprintf(stderr, "parsing failed!\n");
+    fprintf(stderr, "construcao da arvore sintatica falhou!\n");
     return 1;
   }
   return 0;
