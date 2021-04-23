@@ -61,10 +61,10 @@ A_exp absyn_root;
   ARRAY IF THEN ELSE WHILE FOR TO DO LET IN END OF 
   BREAK NIL
   FUNCTION VAR TYPE
-  SWITCH CASE
+  SWITCH CASE DEFAULT
 
 %type <var> lvalue
-%type <exp> program exp func_call arith_exp cmp_exp bool_exp record_create array_create loop_exp cond_exp switch_exp case case_list
+%type <exp> program exp func_call arith_exp cmp_exp bool_exp record_create array_create loop_exp cond_exp switch_exp case case_list default
 %type <dec> dec tydeclist vardec fundeclist
 %type <ty> ty
 %type <declist> decs
@@ -105,15 +105,17 @@ exp: lvalue { $$ = A_VarExp(EM_tokPos, $1); }
    | switch_exp { $$ = $1; }
     ;
 
-switch_exp: SWITCH exp LBRACE case_list RBRACE  { $$ = A_IfExp(EM_tokPos, $2, $4, NULL); }
+switch_exp: SWITCH LPAREN exp RPAREN LBRACE case_list RBRACE  { $$ = A_IfExp(EM_tokPos, $3, $6, NULL); }
+            |  SWITCH LPAREN exp RPAREN LBRACE case_list default RBRACE { $$ = A_IfExp(EM_tokPos, $3, $6,$7); }
+            
+case_list:  case  { $$ = $1; }
+           |case_list case    { $$ = A_IfExp(EM_tokPos, $1, $2, NULL);}
 
-case_list: case
-          |case_list case
-
-case:                    { $$ = NULL; }
-    | CASE exp COLON exp     { $$ = A_IfExp(EM_tokPos, $2, $4, NULL);}
+case: CASE exp COLON exp     { $$ = A_IfExp(EM_tokPos, $2, $4, NULL);}
     | CASE exp COLON explist     { $$ = A_IfExp(EM_tokPos, $2, $4, NULL);}
 
+default: DEFAULT COLON exp  { $$ = A_IfExp(EM_tokPos, $3, NULL, NULL);}
+        |DEFAULT COLON explist      { $$ = A_IfExp(EM_tokPos, $3, NULL, NULL);}
 
 cond_exp:   IF exp THEN exp ELSE exp { $$ = A_IfExp(EM_tokPos, $2, $4, $6); }
       | IF exp THEN exp { $$ = A_IfExp(EM_tokPos, $2, $4, NULL); }

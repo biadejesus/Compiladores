@@ -1,3 +1,5 @@
+#include "util.h"
+
 extern bool EM_anyErrors;
 
 void EM_newline(void);

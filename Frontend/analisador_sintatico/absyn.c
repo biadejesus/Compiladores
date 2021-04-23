@@ -288,12 +288,12 @@ A_efieldList A_EfieldList(A_efield head, A_efieldList tail)
  return p;
 }
 
-A_exp A_SwitchExp(A_pos pos, A_decList decs, A_expList body)
-{
-  A_exp p = checked_malloc(sizeof(*p));
-  p->kind=A_switchExp;
-  p->pos=pos;
-  p->u.let.decs=decs;
-  p->u.let.body=body;
-  return p;
-}
+// A_exp A_SwitchExp(A_pos pos, A_exp exp, A_exp case, A_exp def)
+// {
+//   A_exp p = checked_malloc(sizeof(*p));
+//   p->kind=A_switchExp;
+//   p->pos=pos;
+//   p->u.let.exp=exp;
+//   p->u.let.case=case;
+//   return p;
+// }

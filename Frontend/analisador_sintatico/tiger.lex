@@ -73,6 +73,7 @@ void adjust(void) {
 
 <INITIAL>switch   {adjust(); return SWITCH;}
 <INITIAL>case     {adjust(); return CASE;}
+<INITIAL>default  {adjust(); return DEFAULT;}
 <INITIAL>array    {adjust(); return ARRAY;}
 <INITIAL>if       {adjust(); return IF;}
 <INITIAL>then     {adjust(); return THEN;}

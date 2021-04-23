@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_TIGER_TAB_H_INCLUDED
-# define YY_YY_TIGER_TAB_H_INCLUDED
+#ifndef YY_YY_Y_TAB_H_INCLUDED
+# define YY_YY_Y_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -100,11 +100,63 @@ extern int yydebug;
     VAR = 301,                     /* VAR  */
     TYPE = 302,                    /* TYPE  */
     SWITCH = 303,                  /* SWITCH  */
-    CASE = 304,                     /* CASE  */
-    DEFAULT = 305
+    CASE = 304,                    /* CASE  */
+    DEFAULT = 305                  /* DEFAULT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
+/* Token kinds.  */
+#define YYEOF 0
+#define YYerror 256
+#define YYUNDEF 257
+#define LOW 258
+#define UMINUS 259
+#define ID 260
+#define STRING 261
+#define INT 262
+#define COMMA 263
+#define COLON 264
+#define SEMICOLON 265
+#define LPAREN 266
+#define RPAREN 267
+#define LBRACK 268
+#define RBRACK 269
+#define LBRACE 270
+#define RBRACE 271
+#define DOT 272
+#define PLUS 273
+#define MINUS 274
+#define TIMES 275
+#define DIVIDE 276
+#define EQ 277
+#define NEQ 278
+#define LT 279
+#define LE 280
+#define GT 281
+#define GE 282
+#define AND 283
+#define OR 284
+#define ASSIGN 285
+#define ARRAY 286
+#define IF 287
+#define THEN 288
+#define ELSE 289
+#define WHILE 290
+#define FOR 291
+#define TO 292
+#define DO 293
+#define LET 294
+#define IN 295
+#define END 296
+#define OF 297
+#define BREAK 298
+#define NIL 299
+#define FUNCTION 300
+#define VAR 301
+#define TYPE 302
+#define SWITCH 303
+#define CASE 304
+#define DEFAULT 305
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -131,7 +183,7 @@ union YYSTYPE
   A_efieldList efieldlist;
   
 
-#line 134 "tiger.tab.h"
+#line 187 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -144,4 +196,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_TIGER_TAB_H_INCLUDED  */
+#endif /* !YY_YY_Y_TAB_H_INCLUDED  */

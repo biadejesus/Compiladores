@@ -64,3 +64,4 @@ extern YYSTYPE yylval;
 # define WRITE 313
 # define SWITCH 314
 # define CASE 315
+# define DEFAULT 316

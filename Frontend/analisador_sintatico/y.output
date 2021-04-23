@@ -1,0 +1,3386 @@
+Estado 163 conflitos: 3 de redução/redução
+Estado 165 conflitos: 1 de redução/redução
+
+
+Gramática
+
+    0 $accept: program $end
+
+    1 program: exp
+
+    2 exp: lvalue
+    3    | NIL
+    4    | LPAREN RPAREN
+    5    | INT
+    6    | STRING
+    7    | MINUS exp
+    8    | func_call
+    9    | arith_exp
+   10    | cmp_exp
+   11    | bool_exp
+   12    | record_create
+   13    | array_create
+   14    | lvalue ASSIGN exp
+   15    | cond_exp
+   16    | loop_exp
+   17    | BREAK
+   18    | LET decs IN expseq END
+   19    | LPAREN expseq RPAREN
+   20    | switch_exp
+
+   21 switch_exp: SWITCH LPAREN exp RPAREN LBRACE case_list RBRACE
+   22           | SWITCH LPAREN exp RPAREN LBRACE case_list default RBRACE
+
+   23 case_list: case
+   24          | case_list case
+
+   25 case: CASE exp COLON exp
+   26     | CASE exp COLON explist
+
+   27 default: DEFAULT COLON exp
+   28        | DEFAULT COLON explist
+
+   29 cond_exp: IF exp THEN exp ELSE exp
+   30         | IF exp THEN exp
+
+   31 loop_exp: WHILE exp DO exp
+   32         | FOR ID ASSIGN exp TO exp DO exp
+
+   33 lvalue: ID
+   34       | ID LBRACK exp RBRACK
+   35       | lvalue LBRACK exp RBRACK
+   36       | lvalue DOT ID
+
+   37 func_call: ID LPAREN explist RPAREN
+
+   38 explist: %empty
+   39        | explist_nonempty
+
+   40 explist_nonempty: exp
+   41                 | explist_nonempty COMMA exp
+
+   42 arith_exp: exp PLUS exp
+   43          | exp MINUS exp
+   44          | exp TIMES exp
+   45          | exp DIVIDE exp
+
+   46 cmp_exp: exp EQ exp
+   47        | exp NEQ exp
+   48        | exp LT exp
+   49        | exp LE exp
+   50        | exp GT exp
+   51        | exp GE exp
+
+   52 bool_exp: exp AND exp
+   53         | exp OR exp
+
+   54 record_create: ID LBRACE record_create_list RBRACE
+
+   55 record_create_list: %empty
+   56                   | record_create_list_nonempty
+
+   57 record_create_list_nonempty: record_create_field
+   58                            | record_create_list_nonempty COMMA record_create_field
+
+   59 record_create_field: ID EQ exp
+
+   60 array_create: ID LBRACK exp RBRACK OF exp
+
+   61 decs: %empty
+   62     | decs dec
+
+   63 dec: tydeclist
+   64    | vardec
+   65    | fundeclist
+
+   66 tydeclist: tydec
+   67          | tydec tydeclist
+
+   68 tydec: TYPE ID EQ ty
+
+   69 ty: ID
+   70   | LBRACE tyfields RBRACE
+   71   | ARRAY OF ID
+
+   72 tyfields: %empty
+   73         | tyfields_nonempty
+
+   74 tyfields_nonempty: tyfield
+   75                  | tyfields_nonempty COMMA tyfield
+
+   76 tyfield: ID COLON ID
+
+   77 vardec: VAR ID ASSIGN exp
+   78       | VAR ID COLON ID ASSIGN exp
+
+   79 fundeclist: fundec
+   80           | fundec fundeclist
+
+   81 fundec: FUNCTION ID LPAREN tyfields RPAREN EQ exp
+   82       | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp
+
+   83 expseq: exp
+   84       | expseq SEMICOLON exp
+
+
+Terminais, com as regras onde eles aparecem
+
+    $end (0) 0
+    error (256)
+    LOW (258)
+    UMINUS (259)
+    ID <sval> (260) 32 33 34 36 37 54 59 60 68 69 71 76 77 78 81 82
+    STRING <sval> (261) 6
+    INT <ival> (262) 5
+    COMMA (263) 41 58 75
+    COLON (264) 25 26 27 28 76 78 82
+    SEMICOLON (265) 84
+    LPAREN (266) 4 19 21 22 37 81 82
+    RPAREN (267) 4 19 21 22 37 81 82
+    LBRACK (268) 34 35 60
+    RBRACK (269) 34 35 60
+    LBRACE (270) 21 22 54 70
+    RBRACE (271) 21 22 54 70
+    DOT (272) 36
+    PLUS (273) 42
+    MINUS (274) 7 43
+    TIMES (275) 44
+    DIVIDE (276) 45
+    EQ (277) 46 59 68 81 82
+    NEQ (278) 47
+    LT (279) 48
+    LE (280) 49
+    GT (281) 50
+    GE (282) 51
+    AND (283) 52
+    OR (284) 53
+    ASSIGN (285) 14 32 77 78
+    ARRAY (286) 71
+    IF (287) 29 30
+    THEN (288) 29 30
+    ELSE (289) 29
+    WHILE (290) 31
+    FOR (291) 32
+    TO (292) 32
+    DO (293) 31 32
+    LET (294) 18
+    IN (295) 18
+    END (296) 18
+    OF (297) 60 71
+    BREAK (298) 17
+    NIL (299) 3
+    FUNCTION (300) 81 82
+    VAR (301) 77 78
+    TYPE (302) 68
+    SWITCH (303) 21 22
+    CASE (304) 25 26
+    DEFAULT (305) 27 28
+
+
+Não terminais com as regras onde eles aparecem
+
+    $accept (51)
+        à esquerda: 0
+    program <exp> (52)
+        à esquerda: 1
+        à direita: 0
+    exp <exp> (53)
+        à esquerda: 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+        à direita: 1 7 14 21 22 25 26 27 29 30 31 32 34 35 40 41 42 43 44 45 46 47 48 49 50 51 52 53 59 60 77 78 81 82 83 84
+    switch_exp <exp> (54)
+        à esquerda: 21 22
+        à direita: 20
+    case_list <exp> (55)
+        à esquerda: 23 24
+        à direita: 21 22 24
+    case <exp> (56)
+        à esquerda: 25 26
+        à direita: 23 24
+    default <exp> (57)
+        à esquerda: 27 28
+        à direita: 22
+    cond_exp <exp> (58)
+        à esquerda: 29 30
+        à direita: 15
+    loop_exp <exp> (59)
+        à esquerda: 31 32
+        à direita: 16
+    lvalue <var> (60)
+        à esquerda: 33 34 35 36
+        à direita: 2 14 35 36
+    func_call <exp> (61)
+        à esquerda: 37
+        à direita: 8
+    explist <explist> (62)
+        à esquerda: 38 39
+        à direita: 26 28 37
+    explist_nonempty <explist> (63)
+        à esquerda: 40 41
+        à direita: 39 41
+    arith_exp <exp> (64)
+        à esquerda: 42 43 44 45
+        à direita: 9
+    cmp_exp <exp> (65)
+        à esquerda: 46 47 48 49 50 51
+        à direita: 10
+    bool_exp <exp> (66)
+        à esquerda: 52 53
+        à direita: 11
+    record_create <exp> (67)
+        à esquerda: 54
+        à direita: 12
+    record_create_list <efieldlist> (68)
+        à esquerda: 55 56
+        à direita: 54
+    record_create_list_nonempty <efieldlist> (69)
+        à esquerda: 57 58
+        à direita: 56 58
+    record_create_field <efield> (70)
+        à esquerda: 59
+        à direita: 57 58
+    array_create <exp> (71)
+        à esquerda: 60
+        à direita: 13
+    decs <declist> (72)
+        à esquerda: 61 62
+        à direita: 18 62
+    dec <dec> (73)
+        à esquerda: 63 64 65
+        à direita: 62
+    tydeclist <dec> (74)
+        à esquerda: 66 67
+        à direita: 63 67
+    tydec <namety> (75)
+        à esquerda: 68
+        à direita: 66 67
+    ty <ty> (76)
+        à esquerda: 69 70 71
+        à direita: 68
+    tyfields <fieldlist> (77)
+        à esquerda: 72 73
+        à direita: 70 81 82
+    tyfields_nonempty <fieldlist> (78)
+        à esquerda: 74 75
+        à direita: 73 75
+    tyfield <field> (79)
+        à esquerda: 76
+        à direita: 74 75
+    vardec <dec> (80)
+        à esquerda: 77 78
+        à direita: 64
+    fundeclist <dec> (81)
+        à esquerda: 79 80
+        à direita: 65 80
+    fundec <fundec> (82)
+        à esquerda: 81 82
+        à direita: 79 80
+    expseq <explist> (83)
+        à esquerda: 83 84
+        à direita: 18 19 84
+
+
+Estado 0
+
+    0 $accept: • program $end
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    program        ir ao estado 13
+    exp            ir ao estado 14
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 1
+
+   33 lvalue: ID •
+   34       | ID • LBRACK exp RBRACK
+   37 func_call: ID • LPAREN explist RPAREN
+   54 record_create: ID • LBRACE record_create_list RBRACE
+   60 array_create: ID • LBRACK exp RBRACK OF exp
+
+    LPAREN  deslocar, e ir ao estado 25
+    LBRACK  deslocar, e ir ao estado 26
+    LBRACE  deslocar, e ir ao estado 27
+
+    $padrão  reduzir usando a regra 33 (lvalue)
+
+
+Estado 2
+
+    6 exp: STRING •
+
+    $padrão  reduzir usando a regra 6 (exp)
+
+
+Estado 3
+
+    5 exp: INT •
+
+    $padrão  reduzir usando a regra 5 (exp)
+
+
+Estado 4
+
+    4 exp: LPAREN • RPAREN
+   19    | LPAREN • expseq RPAREN
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    RPAREN  deslocar, e ir ao estado 28
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 29
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+    expseq         ir ao estado 30
+
+
+Estado 5
+
+    7 exp: MINUS • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 31
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 6
+
+   29 cond_exp: IF • exp THEN exp ELSE exp
+   30         | IF • exp THEN exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 32
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 7
+
+   31 loop_exp: WHILE • exp DO exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 33
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 8
+
+   32 loop_exp: FOR • ID ASSIGN exp TO exp DO exp
+
+    ID  deslocar, e ir ao estado 34
+
+
+Estado 9
+
+   18 exp: LET • decs IN expseq END
+
+    $padrão  reduzir usando a regra 61 (decs)
+
+    decs  ir ao estado 35
+
+
+Estado 10
+
+   17 exp: BREAK •
+
+    $padrão  reduzir usando a regra 17 (exp)
+
+
+Estado 11
+
+    3 exp: NIL •
+
+    $padrão  reduzir usando a regra 3 (exp)
+
+
+Estado 12
+
+   21 switch_exp: SWITCH • LPAREN exp RPAREN LBRACE case_list RBRACE
+   22           | SWITCH • LPAREN exp RPAREN LBRACE case_list default RBRACE
+
+    LPAREN  deslocar, e ir ao estado 36
+
+
+Estado 13
+
+    0 $accept: program • $end
+
+    $end  deslocar, e ir ao estado 37
+
+
+Estado 14
+
+    1 program: exp •
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 1 (program)
+
+
+Estado 15
+
+   20 exp: switch_exp •
+
+    $padrão  reduzir usando a regra 20 (exp)
+
+
+Estado 16
+
+   15 exp: cond_exp •
+
+    $padrão  reduzir usando a regra 15 (exp)
+
+
+Estado 17
+
+   16 exp: loop_exp •
+
+    $padrão  reduzir usando a regra 16 (exp)
+
+
+Estado 18
+
+    2 exp: lvalue •
+   14    | lvalue • ASSIGN exp
+   35 lvalue: lvalue • LBRACK exp RBRACK
+   36       | lvalue • DOT ID
+
+    LBRACK  deslocar, e ir ao estado 50
+    DOT     deslocar, e ir ao estado 51
+    ASSIGN  deslocar, e ir ao estado 52
+
+    $padrão  reduzir usando a regra 2 (exp)
+
+
+Estado 19
+
+    8 exp: func_call •
+
+    $padrão  reduzir usando a regra 8 (exp)
+
+
+Estado 20
+
+    9 exp: arith_exp •
+
+    $padrão  reduzir usando a regra 9 (exp)
+
+
+Estado 21
+
+   10 exp: cmp_exp •
+
+    $padrão  reduzir usando a regra 10 (exp)
+
+
+Estado 22
+
+   11 exp: bool_exp •
+
+    $padrão  reduzir usando a regra 11 (exp)
+
+
+Estado 23
+
+   12 exp: record_create •
+
+    $padrão  reduzir usando a regra 12 (exp)
+
+
+Estado 24
+
+   13 exp: array_create •
+
+    $padrão  reduzir usando a regra 13 (exp)
+
+
+Estado 25
+
+   37 func_call: ID LPAREN • explist RPAREN
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    $padrão  reduzir usando a regra 38 (explist)
+
+    exp               ir ao estado 53
+    switch_exp        ir ao estado 15
+    cond_exp          ir ao estado 16
+    loop_exp          ir ao estado 17
+    lvalue            ir ao estado 18
+    func_call         ir ao estado 19
+    explist           ir ao estado 54
+    explist_nonempty  ir ao estado 55
+    arith_exp         ir ao estado 20
+    cmp_exp           ir ao estado 21
+    bool_exp          ir ao estado 22
+    record_create     ir ao estado 23
+    array_create      ir ao estado 24
+
+
+Estado 26
+
+   34 lvalue: ID LBRACK • exp RBRACK
+   60 array_create: ID LBRACK • exp RBRACK OF exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 56
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 27
+
+   54 record_create: ID LBRACE • record_create_list RBRACE
+
+    ID  deslocar, e ir ao estado 57
+
+    $padrão  reduzir usando a regra 55 (record_create_list)
+
+    record_create_list           ir ao estado 58
+    record_create_list_nonempty  ir ao estado 59
+    record_create_field          ir ao estado 60
+
+
+Estado 28
+
+    4 exp: LPAREN RPAREN •
+
+    $padrão  reduzir usando a regra 4 (exp)
+
+
+Estado 29
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+   83 expseq: exp •
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 83 (expseq)
+
+
+Estado 30
+
+   19 exp: LPAREN expseq • RPAREN
+   84 expseq: expseq • SEMICOLON exp
+
+    SEMICOLON  deslocar, e ir ao estado 61
+    RPAREN     deslocar, e ir ao estado 62
+
+
+Estado 31
+
+    7 exp: MINUS exp •
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    $padrão  reduzir usando a regra 7 (exp)
+
+
+Estado 32
+
+   29 cond_exp: IF exp • THEN exp ELSE exp
+   30         | IF exp • THEN exp
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+    THEN    deslocar, e ir ao estado 63
+
+
+Estado 33
+
+   31 loop_exp: WHILE exp • DO exp
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+    DO      deslocar, e ir ao estado 64
+
+
+Estado 34
+
+   32 loop_exp: FOR ID • ASSIGN exp TO exp DO exp
+
+    ASSIGN  deslocar, e ir ao estado 65
+
+
+Estado 35
+
+   18 exp: LET decs • IN expseq END
+   62 decs: decs • dec
+
+    IN        deslocar, e ir ao estado 66
+    FUNCTION  deslocar, e ir ao estado 67
+    VAR       deslocar, e ir ao estado 68
+    TYPE      deslocar, e ir ao estado 69
+
+    dec         ir ao estado 70
+    tydeclist   ir ao estado 71
+    tydec       ir ao estado 72
+    vardec      ir ao estado 73
+    fundeclist  ir ao estado 74
+    fundec      ir ao estado 75
+
+
+Estado 36
+
+   21 switch_exp: SWITCH LPAREN • exp RPAREN LBRACE case_list RBRACE
+   22           | SWITCH LPAREN • exp RPAREN LBRACE case_list default RBRACE
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 76
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 37
+
+    0 $accept: program $end •
+
+    $padrão  aceitar
+
+
+Estado 38
+
+   42 arith_exp: exp PLUS • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 77
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 39
+
+   43 arith_exp: exp MINUS • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 78
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 40
+
+   44 arith_exp: exp TIMES • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 79
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 41
+
+   45 arith_exp: exp DIVIDE • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 80
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 42
+
+   46 cmp_exp: exp EQ • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 81
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 43
+
+   47 cmp_exp: exp NEQ • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 82
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 44
+
+   48 cmp_exp: exp LT • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 83
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 45
+
+   49 cmp_exp: exp LE • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 84
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 46
+
+   50 cmp_exp: exp GT • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 85
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 47
+
+   51 cmp_exp: exp GE • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 86
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 48
+
+   52 bool_exp: exp AND • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 87
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 49
+
+   53 bool_exp: exp OR • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 88
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 50
+
+   35 lvalue: lvalue LBRACK • exp RBRACK
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 89
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 51
+
+   36 lvalue: lvalue DOT • ID
+
+    ID  deslocar, e ir ao estado 90
+
+
+Estado 52
+
+   14 exp: lvalue ASSIGN • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 91
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 53
+
+   40 explist_nonempty: exp •
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 40 (explist_nonempty)
+
+
+Estado 54
+
+   37 func_call: ID LPAREN explist • RPAREN
+
+    RPAREN  deslocar, e ir ao estado 92
+
+
+Estado 55
+
+   39 explist: explist_nonempty •
+   41 explist_nonempty: explist_nonempty • COMMA exp
+
+    COMMA  deslocar, e ir ao estado 93
+
+    $padrão  reduzir usando a regra 39 (explist)
+
+
+Estado 56
+
+   34 lvalue: ID LBRACK exp • RBRACK
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+   60 array_create: ID LBRACK exp • RBRACK OF exp
+
+    RBRACK  deslocar, e ir ao estado 94
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+
+Estado 57
+
+   59 record_create_field: ID • EQ exp
+
+    EQ  deslocar, e ir ao estado 95
+
+
+Estado 58
+
+   54 record_create: ID LBRACE record_create_list • RBRACE
+
+    RBRACE  deslocar, e ir ao estado 96
+
+
+Estado 59
+
+   56 record_create_list: record_create_list_nonempty •
+   58 record_create_list_nonempty: record_create_list_nonempty • COMMA record_create_field
+
+    COMMA  deslocar, e ir ao estado 97
+
+    $padrão  reduzir usando a regra 56 (record_create_list)
+
+
+Estado 60
+
+   57 record_create_list_nonempty: record_create_field •
+
+    $padrão  reduzir usando a regra 57 (record_create_list_nonempty)
+
+
+Estado 61
+
+   84 expseq: expseq SEMICOLON • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 98
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 62
+
+   19 exp: LPAREN expseq RPAREN •
+
+    $padrão  reduzir usando a regra 19 (exp)
+
+
+Estado 63
+
+   29 cond_exp: IF exp THEN • exp ELSE exp
+   30         | IF exp THEN • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 99
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 64
+
+   31 loop_exp: WHILE exp DO • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 100
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 65
+
+   32 loop_exp: FOR ID ASSIGN • exp TO exp DO exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 101
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 66
+
+   18 exp: LET decs IN • expseq END
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 29
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+    expseq         ir ao estado 102
+
+
+Estado 67
+
+   81 fundec: FUNCTION • ID LPAREN tyfields RPAREN EQ exp
+   82       | FUNCTION • ID LPAREN tyfields RPAREN COLON ID EQ exp
+
+    ID  deslocar, e ir ao estado 103
+
+
+Estado 68
+
+   77 vardec: VAR • ID ASSIGN exp
+   78       | VAR • ID COLON ID ASSIGN exp
+
+    ID  deslocar, e ir ao estado 104
+
+
+Estado 69
+
+   68 tydec: TYPE • ID EQ ty
+
+    ID  deslocar, e ir ao estado 105
+
+
+Estado 70
+
+   62 decs: decs dec •
+
+    $padrão  reduzir usando a regra 62 (decs)
+
+
+Estado 71
+
+   63 dec: tydeclist •
+
+    $padrão  reduzir usando a regra 63 (dec)
+
+
+Estado 72
+
+   66 tydeclist: tydec •
+   67          | tydec • tydeclist
+
+    TYPE  deslocar, e ir ao estado 69
+
+    $padrão  reduzir usando a regra 66 (tydeclist)
+
+    tydeclist  ir ao estado 106
+    tydec      ir ao estado 72
+
+
+Estado 73
+
+   64 dec: vardec •
+
+    $padrão  reduzir usando a regra 64 (dec)
+
+
+Estado 74
+
+   65 dec: fundeclist •
+
+    $padrão  reduzir usando a regra 65 (dec)
+
+
+Estado 75
+
+   79 fundeclist: fundec •
+   80           | fundec • fundeclist
+
+    FUNCTION  deslocar, e ir ao estado 67
+
+    $padrão  reduzir usando a regra 79 (fundeclist)
+
+    fundeclist  ir ao estado 107
+    fundec      ir ao estado 75
+
+
+Estado 76
+
+   21 switch_exp: SWITCH LPAREN exp • RPAREN LBRACE case_list RBRACE
+   22           | SWITCH LPAREN exp • RPAREN LBRACE case_list default RBRACE
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    RPAREN  deslocar, e ir ao estado 108
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+
+Estado 77
+
+   42 arith_exp: exp • PLUS exp
+   42          | exp PLUS exp •
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+
+    $padrão  reduzir usando a regra 42 (arith_exp)
+
+
+Estado 78
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   43          | exp MINUS exp •
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+
+    $padrão  reduzir usando a regra 43 (arith_exp)
+
+
+Estado 79
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   44          | exp TIMES exp •
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    $padrão  reduzir usando a regra 44 (arith_exp)
+
+
+Estado 80
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   45          | exp DIVIDE exp •
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    $padrão  reduzir usando a regra 45 (arith_exp)
+
+
+Estado 81
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   46        | exp EQ exp •
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+
+    $padrão  reduzir usando a regra 46 (cmp_exp)
+
+
+Estado 82
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   47        | exp NEQ exp •
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+
+    $padrão  reduzir usando a regra 47 (cmp_exp)
+
+
+Estado 83
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   48        | exp LT exp •
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+
+    $padrão  reduzir usando a regra 48 (cmp_exp)
+
+
+Estado 84
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   49        | exp LE exp •
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+
+    $padrão  reduzir usando a regra 49 (cmp_exp)
+
+
+Estado 85
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   50        | exp GT exp •
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+
+    $padrão  reduzir usando a regra 50 (cmp_exp)
+
+
+Estado 86
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   51        | exp GE exp •
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+
+    $padrão  reduzir usando a regra 51 (cmp_exp)
+
+
+Estado 87
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   52         | exp AND exp •
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+
+    $padrão  reduzir usando a regra 52 (bool_exp)
+
+
+Estado 88
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+   53         | exp OR exp •
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+
+    $padrão  reduzir usando a regra 53 (bool_exp)
+
+
+Estado 89
+
+   35 lvalue: lvalue LBRACK exp • RBRACK
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    RBRACK  deslocar, e ir ao estado 109
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+
+Estado 90
+
+   36 lvalue: lvalue DOT ID •
+
+    $padrão  reduzir usando a regra 36 (lvalue)
+
+
+Estado 91
+
+   14 exp: lvalue ASSIGN exp •
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 14 (exp)
+
+
+Estado 92
+
+   37 func_call: ID LPAREN explist RPAREN •
+
+    $padrão  reduzir usando a regra 37 (func_call)
+
+
+Estado 93
+
+   41 explist_nonempty: explist_nonempty COMMA • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 110
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 94
+
+   34 lvalue: ID LBRACK exp RBRACK •
+   60 array_create: ID LBRACK exp RBRACK • OF exp
+
+    OF  deslocar, e ir ao estado 111
+
+    $padrão  reduzir usando a regra 34 (lvalue)
+
+
+Estado 95
+
+   59 record_create_field: ID EQ • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 112
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 96
+
+   54 record_create: ID LBRACE record_create_list RBRACE •
+
+    $padrão  reduzir usando a regra 54 (record_create)
+
+
+Estado 97
+
+   58 record_create_list_nonempty: record_create_list_nonempty COMMA • record_create_field
+
+    ID  deslocar, e ir ao estado 57
+
+    record_create_field  ir ao estado 113
+
+
+Estado 98
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+   84 expseq: expseq SEMICOLON exp •
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 84 (expseq)
+
+
+Estado 99
+
+   29 cond_exp: IF exp THEN exp • ELSE exp
+   30         | IF exp THEN exp •
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+    ELSE    deslocar, e ir ao estado 114
+
+    $padrão  reduzir usando a regra 30 (cond_exp)
+
+
+Estado 100
+
+   31 loop_exp: WHILE exp DO exp •
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 31 (loop_exp)
+
+
+Estado 101
+
+   32 loop_exp: FOR ID ASSIGN exp • TO exp DO exp
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+    TO      deslocar, e ir ao estado 115
+
+
+Estado 102
+
+   18 exp: LET decs IN expseq • END
+   84 expseq: expseq • SEMICOLON exp
+
+    SEMICOLON  deslocar, e ir ao estado 61
+    END        deslocar, e ir ao estado 116
+
+
+Estado 103
+
+   81 fundec: FUNCTION ID • LPAREN tyfields RPAREN EQ exp
+   82       | FUNCTION ID • LPAREN tyfields RPAREN COLON ID EQ exp
+
+    LPAREN  deslocar, e ir ao estado 117
+
+
+Estado 104
+
+   77 vardec: VAR ID • ASSIGN exp
+   78       | VAR ID • COLON ID ASSIGN exp
+
+    COLON   deslocar, e ir ao estado 118
+    ASSIGN  deslocar, e ir ao estado 119
+
+
+Estado 105
+
+   68 tydec: TYPE ID • EQ ty
+
+    EQ  deslocar, e ir ao estado 120
+
+
+Estado 106
+
+   67 tydeclist: tydec tydeclist •
+
+    $padrão  reduzir usando a regra 67 (tydeclist)
+
+
+Estado 107
+
+   80 fundeclist: fundec fundeclist •
+
+    $padrão  reduzir usando a regra 80 (fundeclist)
+
+
+Estado 108
+
+   21 switch_exp: SWITCH LPAREN exp RPAREN • LBRACE case_list RBRACE
+   22           | SWITCH LPAREN exp RPAREN • LBRACE case_list default RBRACE
+
+    LBRACE  deslocar, e ir ao estado 121
+
+
+Estado 109
+
+   35 lvalue: lvalue LBRACK exp RBRACK •
+
+    $padrão  reduzir usando a regra 35 (lvalue)
+
+
+Estado 110
+
+   41 explist_nonempty: explist_nonempty COMMA exp •
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 41 (explist_nonempty)
+
+
+Estado 111
+
+   60 array_create: ID LBRACK exp RBRACK OF • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 122
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 112
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+   59 record_create_field: ID EQ exp •
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 59 (record_create_field)
+
+
+Estado 113
+
+   58 record_create_list_nonempty: record_create_list_nonempty COMMA record_create_field •
+
+    $padrão  reduzir usando a regra 58 (record_create_list_nonempty)
+
+
+Estado 114
+
+   29 cond_exp: IF exp THEN exp ELSE • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 123
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 115
+
+   32 loop_exp: FOR ID ASSIGN exp TO • exp DO exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 124
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 116
+
+   18 exp: LET decs IN expseq END •
+
+    $padrão  reduzir usando a regra 18 (exp)
+
+
+Estado 117
+
+   81 fundec: FUNCTION ID LPAREN • tyfields RPAREN EQ exp
+   82       | FUNCTION ID LPAREN • tyfields RPAREN COLON ID EQ exp
+
+    ID  deslocar, e ir ao estado 125
+
+    $padrão  reduzir usando a regra 72 (tyfields)
+
+    tyfields           ir ao estado 126
+    tyfields_nonempty  ir ao estado 127
+    tyfield            ir ao estado 128
+
+
+Estado 118
+
+   78 vardec: VAR ID COLON • ID ASSIGN exp
+
+    ID  deslocar, e ir ao estado 129
+
+
+Estado 119
+
+   77 vardec: VAR ID ASSIGN • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 130
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 120
+
+   68 tydec: TYPE ID EQ • ty
+
+    ID      deslocar, e ir ao estado 131
+    LBRACE  deslocar, e ir ao estado 132
+    ARRAY   deslocar, e ir ao estado 133
+
+    ty  ir ao estado 134
+
+
+Estado 121
+
+   21 switch_exp: SWITCH LPAREN exp RPAREN LBRACE • case_list RBRACE
+   22           | SWITCH LPAREN exp RPAREN LBRACE • case_list default RBRACE
+
+    CASE  deslocar, e ir ao estado 135
+
+    case_list  ir ao estado 136
+    case       ir ao estado 137
+
+
+Estado 122
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+   60 array_create: ID LBRACK exp RBRACK OF exp •
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 60 (array_create)
+
+
+Estado 123
+
+   29 cond_exp: IF exp THEN exp ELSE exp •
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 29 (cond_exp)
+
+
+Estado 124
+
+   32 loop_exp: FOR ID ASSIGN exp TO exp • DO exp
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+    DO      deslocar, e ir ao estado 138
+
+
+Estado 125
+
+   76 tyfield: ID • COLON ID
+
+    COLON  deslocar, e ir ao estado 139
+
+
+Estado 126
+
+   81 fundec: FUNCTION ID LPAREN tyfields • RPAREN EQ exp
+   82       | FUNCTION ID LPAREN tyfields • RPAREN COLON ID EQ exp
+
+    RPAREN  deslocar, e ir ao estado 140
+
+
+Estado 127
+
+   73 tyfields: tyfields_nonempty •
+   75 tyfields_nonempty: tyfields_nonempty • COMMA tyfield
+
+    COMMA  deslocar, e ir ao estado 141
+
+    $padrão  reduzir usando a regra 73 (tyfields)
+
+
+Estado 128
+
+   74 tyfields_nonempty: tyfield •
+
+    $padrão  reduzir usando a regra 74 (tyfields_nonempty)
+
+
+Estado 129
+
+   78 vardec: VAR ID COLON ID • ASSIGN exp
+
+    ASSIGN  deslocar, e ir ao estado 142
+
+
+Estado 130
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+   77 vardec: VAR ID ASSIGN exp •
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 77 (vardec)
+
+
+Estado 131
+
+   69 ty: ID •
+
+    $padrão  reduzir usando a regra 69 (ty)
+
+
+Estado 132
+
+   70 ty: LBRACE • tyfields RBRACE
+
+    ID  deslocar, e ir ao estado 125
+
+    $padrão  reduzir usando a regra 72 (tyfields)
+
+    tyfields           ir ao estado 143
+    tyfields_nonempty  ir ao estado 127
+    tyfield            ir ao estado 128
+
+
+Estado 133
+
+   71 ty: ARRAY • OF ID
+
+    OF  deslocar, e ir ao estado 144
+
+
+Estado 134
+
+   68 tydec: TYPE ID EQ ty •
+
+    $padrão  reduzir usando a regra 68 (tydec)
+
+
+Estado 135
+
+   25 case: CASE • exp COLON exp
+   26     | CASE • exp COLON explist
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 145
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 136
+
+   21 switch_exp: SWITCH LPAREN exp RPAREN LBRACE case_list • RBRACE
+   22           | SWITCH LPAREN exp RPAREN LBRACE case_list • default RBRACE
+   24 case_list: case_list • case
+
+    RBRACE   deslocar, e ir ao estado 146
+    CASE     deslocar, e ir ao estado 135
+    DEFAULT  deslocar, e ir ao estado 147
+
+    case     ir ao estado 148
+    default  ir ao estado 149
+
+
+Estado 137
+
+   23 case_list: case •
+
+    $padrão  reduzir usando a regra 23 (case_list)
+
+
+Estado 138
+
+   32 loop_exp: FOR ID ASSIGN exp TO exp DO • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 150
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 139
+
+   76 tyfield: ID COLON • ID
+
+    ID  deslocar, e ir ao estado 151
+
+
+Estado 140
+
+   81 fundec: FUNCTION ID LPAREN tyfields RPAREN • EQ exp
+   82       | FUNCTION ID LPAREN tyfields RPAREN • COLON ID EQ exp
+
+    COLON  deslocar, e ir ao estado 152
+    EQ     deslocar, e ir ao estado 153
+
+
+Estado 141
+
+   75 tyfields_nonempty: tyfields_nonempty COMMA • tyfield
+
+    ID  deslocar, e ir ao estado 125
+
+    tyfield  ir ao estado 154
+
+
+Estado 142
+
+   78 vardec: VAR ID COLON ID ASSIGN • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 155
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 143
+
+   70 ty: LBRACE tyfields • RBRACE
+
+    RBRACE  deslocar, e ir ao estado 156
+
+
+Estado 144
+
+   71 ty: ARRAY OF • ID
+
+    ID  deslocar, e ir ao estado 157
+
+
+Estado 145
+
+   25 case: CASE exp • COLON exp
+   26     | CASE exp • COLON explist
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    COLON   deslocar, e ir ao estado 158
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+
+Estado 146
+
+   21 switch_exp: SWITCH LPAREN exp RPAREN LBRACE case_list RBRACE •
+
+    $padrão  reduzir usando a regra 21 (switch_exp)
+
+
+Estado 147
+
+   27 default: DEFAULT • COLON exp
+   28        | DEFAULT • COLON explist
+
+    COLON  deslocar, e ir ao estado 159
+
+
+Estado 148
+
+   24 case_list: case_list case •
+
+    $padrão  reduzir usando a regra 24 (case_list)
+
+
+Estado 149
+
+   22 switch_exp: SWITCH LPAREN exp RPAREN LBRACE case_list default • RBRACE
+
+    RBRACE  deslocar, e ir ao estado 160
+
+
+Estado 150
+
+   32 loop_exp: FOR ID ASSIGN exp TO exp DO exp •
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 32 (loop_exp)
+
+
+Estado 151
+
+   76 tyfield: ID COLON ID •
+
+    $padrão  reduzir usando a regra 76 (tyfield)
+
+
+Estado 152
+
+   82 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON • ID EQ exp
+
+    ID  deslocar, e ir ao estado 161
+
+
+Estado 153
+
+   81 fundec: FUNCTION ID LPAREN tyfields RPAREN EQ • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 162
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 154
+
+   75 tyfields_nonempty: tyfields_nonempty COMMA tyfield •
+
+    $padrão  reduzir usando a regra 75 (tyfields_nonempty)
+
+
+Estado 155
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+   78 vardec: VAR ID COLON ID ASSIGN exp •
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 78 (vardec)
+
+
+Estado 156
+
+   70 ty: LBRACE tyfields RBRACE •
+
+    $padrão  reduzir usando a regra 70 (ty)
+
+
+Estado 157
+
+   71 ty: ARRAY OF ID •
+
+    $padrão  reduzir usando a regra 71 (ty)
+
+
+Estado 158
+
+   25 case: CASE exp COLON • exp
+   26     | CASE exp COLON • explist
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    $padrão  reduzir usando a regra 38 (explist)
+
+    exp               ir ao estado 163
+    switch_exp        ir ao estado 15
+    cond_exp          ir ao estado 16
+    loop_exp          ir ao estado 17
+    lvalue            ir ao estado 18
+    func_call         ir ao estado 19
+    explist           ir ao estado 164
+    explist_nonempty  ir ao estado 55
+    arith_exp         ir ao estado 20
+    cmp_exp           ir ao estado 21
+    bool_exp          ir ao estado 22
+    record_create     ir ao estado 23
+    array_create      ir ao estado 24
+
+
+Estado 159
+
+   27 default: DEFAULT COLON • exp
+   28        | DEFAULT COLON • explist
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    $padrão  reduzir usando a regra 38 (explist)
+
+    exp               ir ao estado 165
+    switch_exp        ir ao estado 15
+    cond_exp          ir ao estado 16
+    loop_exp          ir ao estado 17
+    lvalue            ir ao estado 18
+    func_call         ir ao estado 19
+    explist           ir ao estado 166
+    explist_nonempty  ir ao estado 55
+    arith_exp         ir ao estado 20
+    cmp_exp           ir ao estado 21
+    bool_exp          ir ao estado 22
+    record_create     ir ao estado 23
+    array_create      ir ao estado 24
+
+
+Estado 160
+
+   22 switch_exp: SWITCH LPAREN exp RPAREN LBRACE case_list default RBRACE •
+
+    $padrão  reduzir usando a regra 22 (switch_exp)
+
+
+Estado 161
+
+   82 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID • EQ exp
+
+    EQ  deslocar, e ir ao estado 167
+
+
+Estado 162
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+   81 fundec: FUNCTION ID LPAREN tyfields RPAREN EQ exp •
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 81 (fundec)
+
+
+Estado 163
+
+   25 case: CASE exp COLON exp •
+   40 explist_nonempty: exp •
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    COMMA    reduzir usando a regra 40 (explist_nonempty)
+    RBRACE   reduzir usando a regra 25 (case)
+    RBRACE   [reduzir usando a regra 40 (explist_nonempty)]
+    CASE     reduzir usando a regra 25 (case)
+    CASE     [reduzir usando a regra 40 (explist_nonempty)]
+    DEFAULT  reduzir usando a regra 25 (case)
+    DEFAULT  [reduzir usando a regra 40 (explist_nonempty)]
+    $padrão  reduzir usando a regra 25 (case)
+
+
+Estado 164
+
+   26 case: CASE exp COLON explist •
+
+    $padrão  reduzir usando a regra 26 (case)
+
+
+Estado 165
+
+   27 default: DEFAULT COLON exp •
+   40 explist_nonempty: exp •
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    COMMA    reduzir usando a regra 40 (explist_nonempty)
+    RBRACE   reduzir usando a regra 27 (default)
+    RBRACE   [reduzir usando a regra 40 (explist_nonempty)]
+    $padrão  reduzir usando a regra 27 (default)
+
+
+Estado 166
+
+   28 default: DEFAULT COLON explist •
+
+    $padrão  reduzir usando a regra 28 (default)
+
+
+Estado 167
+
+   82 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ • exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    WHILE   deslocar, e ir ao estado 7
+    FOR     deslocar, e ir ao estado 8
+    LET     deslocar, e ir ao estado 9
+    BREAK   deslocar, e ir ao estado 10
+    NIL     deslocar, e ir ao estado 11
+    SWITCH  deslocar, e ir ao estado 12
+
+    exp            ir ao estado 168
+    switch_exp     ir ao estado 15
+    cond_exp       ir ao estado 16
+    loop_exp       ir ao estado 17
+    lvalue         ir ao estado 18
+    func_call      ir ao estado 19
+    arith_exp      ir ao estado 20
+    cmp_exp        ir ao estado 21
+    bool_exp       ir ao estado 22
+    record_create  ir ao estado 23
+    array_create   ir ao estado 24
+
+
+Estado 168
+
+   42 arith_exp: exp • PLUS exp
+   43          | exp • MINUS exp
+   44          | exp • TIMES exp
+   45          | exp • DIVIDE exp
+   46 cmp_exp: exp • EQ exp
+   47        | exp • NEQ exp
+   48        | exp • LT exp
+   49        | exp • LE exp
+   50        | exp • GT exp
+   51        | exp • GE exp
+   52 bool_exp: exp • AND exp
+   53         | exp • OR exp
+   82 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp •
+
+    PLUS    deslocar, e ir ao estado 38
+    MINUS   deslocar, e ir ao estado 39
+    TIMES   deslocar, e ir ao estado 40
+    DIVIDE  deslocar, e ir ao estado 41
+    EQ      deslocar, e ir ao estado 42
+    NEQ     deslocar, e ir ao estado 43
+    LT      deslocar, e ir ao estado 44
+    LE      deslocar, e ir ao estado 45
+    GT      deslocar, e ir ao estado 46
+    GE      deslocar, e ir ao estado 47
+    AND     deslocar, e ir ao estado 48
+    OR      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 82 (fundec)
