@@ -1,0 +1,14 @@
+let
+  var a:= 0
+
+  switch a {
+    case 0:
+        a := 2
+  case 1:
+    a := 5
+    default:
+        a = -1
+}
+in 
+  print(a)
+end
