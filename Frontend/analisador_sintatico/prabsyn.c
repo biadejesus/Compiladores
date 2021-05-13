@@ -28,7 +28,6 @@ static void indent(FILE *out, int d) {
   for (i = 0; i <= d; i++) fprintf(out, " ");
 }
 
-/* Print A_var types. Indent d spaces. */
 static void pr_var(FILE *out, A_var v, int d) {
  indent(out, d);
  switch (v->kind) {
@@ -58,7 +57,6 @@ static void pr_oper(FILE *out, A_oper d) {
   fprintf(out, "%s", str_oper[d]);
 }
 
-/* Print A_exp types. Indent d spaces. */
 void pr_exp(FILE *out, A_exp v, int d) {
  indent(out, d);
  switch (v->kind) {

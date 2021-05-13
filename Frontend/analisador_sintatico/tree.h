@@ -1,7 +1,3 @@
-/*
- * tree.h - Definitions for intermediate representation (IR) trees.
- *
- */
 #ifndef TREE_H
 #define TREE_H
 
@@ -63,8 +59,8 @@ T_exp T_Name(Temp_label);
 T_exp T_Const(int);
 T_exp T_Call(T_exp, T_expList);
 
-T_relOp T_notRel(T_relOp);  /* a op b    ==     not(a notRel(op) b)  */
-T_relOp T_commute(T_relOp); /* a op b    ==    b commute(op) a       */
+T_relOp T_notRel(T_relOp); 
+T_relOp T_commute(T_relOp); 
 
 
-#endif /* tree.h */
+#endif 

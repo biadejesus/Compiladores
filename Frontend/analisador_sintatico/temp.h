@@ -1,7 +1,3 @@
-/*
- * temp.h 
- *
- */
 #ifndef TEMP_H_
 #define TEMP_H_
 

@@ -1,10 +1,3 @@
-/*
- * temp.c - functions to create and manipulate temporary variables which are
- *          used in the IR tree representation before it has been determined
- *          which variables are to go into registers.
- *
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,7 +20,6 @@ Temp_label Temp_newlabel(void)
  return Temp_namedlabel(String(buf));
 }
 
-/* The label will be created only if it is not found. */
 Temp_label Temp_namedlabel(string s)
 {return S_Symbol(s);
 }

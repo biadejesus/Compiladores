@@ -64,11 +64,8 @@ Tr_expList Tr_ExpList(Tr_exp head, Tr_expList tail) {
     return el;
 }
 
-static Tr_level outer = NULL; // 库函数和全局变量的level
-/**
- * 每次调用都是返回同样的level 就是库函数和全局变量的level
- * 
- */
+static Tr_level outer = NULL; 
+
 Tr_level Tr_outermost() {
     if(!outer) {
         outer = Tr_newLevel(NULL, Temp_newlabel(), NULL);
@@ -85,9 +82,7 @@ static Tr_access Tr_Access(Tr_level level, F_access access) {
 
 static Tr_accessList make_formals(Tr_level level) {
 	Tr_accessList head = NULL, tail = NULL;
-	F_accessList al = F_formals(level->frame)->tail; // ignore head node, 不需要把static link也加进去
-                                                     // translate模块只需要在new frame的时候告诉frame添加一个static link
-                                                     // 自己不需要处理static link
+	F_accessList al = F_formals(level->frame)->tail; 
 	for (; al; al = al->tail) {
 		Tr_access access = Tr_Access(level, al->head);
 		if (head) {
@@ -105,7 +100,7 @@ Tr_level Tr_newLevel(Tr_level parent, Temp_label name, U_boolList formals) {
     Tr_level level = checked_malloc(sizeof(*level));
     level->parent = parent;
     level->name = name;
-    level->frame = F_newFrame(name, U_BoolList(TRUE, formals)); // 在原formals的基础上多添加一个用作static link
+    level->frame = F_newFrame(name, U_BoolList(TRUE, formals)); 
     level->formals = make_formals(level);
     return level;
 }
@@ -221,16 +216,9 @@ Tr_exp Tr_noExp() {
     return Tr_Ex(T_Const(0));
 }
 
-/**
- * translate frame access to simple varaible
- * 
- * note:
- * access may be declared in outer level, so it needs to follow the static link to find.
- */
 Tr_exp Tr_simpleVar(Tr_access access, Tr_level level) {
     T_exp fp = T_Temp(F_FP());
     Tr_level current_level = level;
-    // F_formals returns all the formals in the frame, in which the head is static link
     if(access->level != current_level) {
         fp = F_Exp(F_formals(level->frame)->head, fp);
         current_level = current_level->parent;
@@ -247,17 +235,10 @@ Tr_exp Tr_subscriptVar(Tr_exp array, Tr_exp index) {
                         T_Binop(T_mul, unEx(index), T_Const(F_WORD_SIZE)))));
 }
 
-/**
- * nil is treated as a record with no memory space
- * 
- * note:
- * built-in function "initRecord" need a paramater, so called size, to allocate memory space
- */
 static Temp_temp nil = NULL;
 Tr_exp Tr_nilExp() {
     if(!nil) {
         nil = Temp_newtemp();
-        // initialize nil as a 0
         return Tr_Ex(T_Eseq(T_Move(T_Temp(nil), F_externalCall(String("initRecord"), T_ExpList(T_Const(0), NULL))), T_Temp(nil)));
     }
     return Tr_Ex(T_Temp(nil));
@@ -267,10 +248,6 @@ Tr_exp Tr_intExp(int n) {
     return Tr_Ex(T_Const(n));
 }
 
-/**
- * literal string, 在其他语言中被存储在堆里作为全局字符串
- * 这里维护一个fraglist表示全局字符串, 为每个字符串生成label, 即memory address
- */
 static F_fragList global_string = NULL;
 Tr_exp Tr_stringExp(string s) {
     Temp_label str = Temp_newlabel();
@@ -281,12 +258,10 @@ Tr_exp Tr_stringExp(string s) {
 
 Tr_exp Tr_callExp(Tr_level call_level, Tr_level func_level, Temp_label name, Tr_expList args) {
     T_exp fp = T_Temp(F_FP());
-    // follow the static link
     while(call_level != func_level->parent) {
         fp = F_Exp(F_formals(call_level->frame)->head, fp);
         call_level = call_level->parent;
     }
-    // convert Tr_expList to T_expList
     Tr_expList el = NULL;
     T_expList head = NULL;
     for(el = args; el; el = el->tail) {
@@ -328,7 +303,6 @@ Tr_exp Tr_relExp(A_oper op, Tr_exp left, Tr_exp right) {
 Tr_exp Tr_recordExp(Tr_expList fields, int n_fields) {
     Temp_temp t = Temp_newtemp();
     T_stm record_malloc = T_Move(T_Temp(t), F_externalCall(String("initRecord"), T_ExpList(T_Const(n_fields * F_WORD_SIZE), NULL)));
-    // reverse the list
     Tr_expList el = fields, head = NULL;
     for(; el; el = el->tail) {
         head = Tr_ExpList(el->head, head);
@@ -361,11 +335,7 @@ Tr_exp Tr_ifExp(Tr_exp test, Tr_exp then, Tr_exp elsee) {
     doPatch(c.trues, t);
 
     if(elsee) {
-        /*
-        Here, we uses the most simple way to translate if expression,
-        The BOOK indicates this way is not efficient when then-else part is Cx
-        However, this kind of expression is not so frequently using. So, keep it simple.
-        */
+
         Temp_temp  r = Temp_newtemp();
         Temp_label z = Temp_newlabel();
         T_stm jump = T_Jump(T_Name(z), Temp_LabelList(z, NULL));
@@ -373,7 +343,6 @@ Tr_exp Tr_ifExp(Tr_exp test, Tr_exp then, Tr_exp elsee) {
         T_stm then_stm = NULL;
         T_stm else_stm = NULL;
 
-        // the expression then and else must have the same type, which is the type of entire if-exp or both produce no value.
         if(elsee->kind == Tr_ex) {
             con_exp = Tr_Ex(T_Eseq(c.stm,
                              T_Eseq(T_Label(t), T_Eseq(T_Move(T_Temp(r), unEx(then)),

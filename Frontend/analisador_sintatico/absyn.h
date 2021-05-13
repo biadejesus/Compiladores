@@ -7,10 +7,10 @@ typedef int A_pos;
 
 typedef struct A_var_ *A_var;
 typedef struct A_exp_ *A_exp;
-typedef struct A_switch_ *A_switch;
-typedef struct A_case_ *A_case;
-typedef struct A_caseList_ *A_caseList;
-typedef struct A_default_ *A_default;
+// typedef struct A_switch_ *A_switch;
+// typedef struct A_case_ *A_case;
+// typedef struct A_caseList_ *A_caseList;
+// typedef struct A_default_ *A_default;
 typedef struct A_dec_ *A_dec;
 typedef struct A_ty_ *A_ty;
 
@@ -42,7 +42,7 @@ struct A_var_
 struct A_exp_
       {enum {A_varExp, A_nilExp, A_intExp, A_stringExp, A_callExp,
 	       A_opExp, A_recordExp, A_seqExp, A_assignExp, A_ifExp,
-	       A_whileExp, A_forExp, A_breakExp, A_letExp, A_arrayExp} kind;
+	       A_whileExp, A_forExp, A_breakExp, A_letExp, A_arrayExp, A_case, A_default, A_switch, A_caseList} kind;
        A_pos pos;
        union {A_var var;
 	      int intt;
@@ -57,6 +57,11 @@ struct A_exp_
 	      struct {S_symbol var; A_exp lo,hi,body; bool escape;} forr;
 	      struct {A_decList decs; A_exp body;} let;
 	      struct {S_symbol typ; A_exp size, init;} array;
+		  struct {A_pos pos; A_exp exp;} casee;
+		  struct {A_pos pos; A_exp exp;} defaultt;
+		  struct {A_pos pos; A_exp caseListt; A_exp casee;} caseListt;
+		  struct {A_pos pos; A_var test; A_exp caseListt;} switchh;
+
 	    } u;
      };
 
@@ -91,10 +96,8 @@ struct A_nametyList_ {A_namety head; A_nametyList tail;};
 struct A_efield_ {S_symbol name; A_exp exp;};
 struct A_efieldList_ {A_efield head; A_efieldList tail;};
 
-struct A_case_ {A_pos pos; A_exp test; A_exp exp;};
-struct A_caseList_ {A_pos pos; A_caseList caseListt; A_case casee;};
-struct A_default_ {A_pos pos; A_exp exp;};
-struct A_switch_ {A_pos pos; A_exp test; A_case casee; A_default defaultt;};
+
+
 
 //funções
 A_var A_SimpleVar(A_pos pos, S_symbol sym);
@@ -115,7 +118,6 @@ A_exp A_WhileExp(A_pos pos, A_exp test, A_exp body);
 A_exp A_ForExp(A_pos pos, S_symbol var, A_exp lo, A_exp hi, A_exp body);
 A_exp A_BreakExp(A_pos pos);
 A_exp A_LetExp(A_pos pos, A_decList decs, A_exp body);
-//A_exp A_SwitchExp(A_pos pos, A_decList decs, A_exp body);
 A_exp A_ArrayExp(A_pos pos, S_symbol typ, A_exp size, A_exp init);
 
 A_dec A_FunctionDec(A_pos pos, A_fundecList function);
@@ -138,9 +140,9 @@ A_nametyList A_NametyList(A_namety head, A_nametyList tail);
 A_efield A_Efield(S_symbol name, A_exp exp);
 A_efieldList A_EfieldList(A_efield head, A_efieldList tail);
 
-A_case A_Case(A_pos pos, A_exp test, A_exp exp);
-A_caseList A_CaseList(A_pos pos, A_caseList caseListt, A_case casee);
-A_default A_Default(A_pos pos, A_exp exp);
-A_switch A_Switch(A_pos pos, A_exp test, A_case casee, A_default defaultt);
+A_exp A_Case(A_pos pos, A_exp exp);
+A_exp A_CaseList(A_pos pos, A_exp caseListt, A_exp casee);
+A_exp A_Default(A_pos pos, A_exp exp);
+A_exp A_Switch(A_pos pos, A_var test, A_exp caseListt);
 
 #endif

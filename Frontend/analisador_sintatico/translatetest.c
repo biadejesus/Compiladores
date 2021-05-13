@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
   if(absyn_tree_root) {
     F_fragList fl = SEM_transProg(absyn_tree_root);
   } else {
-    fprintf(stderr, "parsing failed!\n");
+    fprintf(stderr, "parsing falhou!\n");
     return 1;
   }
   return 0;

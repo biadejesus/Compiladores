@@ -2,7 +2,7 @@
 #include <string.h>
 #include "util.h"
 #include "absyn.h"
-#include "tiger.tab.h"
+#include "y.tab.h"
 #include "errormsg.h"
 
 int contador_comment=0;

@@ -288,34 +288,35 @@ A_efieldList A_EfieldList(A_efield head, A_efieldList tail) {
   return p;
 }
 
-A_case A_Case(A_pos pos, A_exp test, A_exp exp) {
-  A_case p = checked_malloc(sizeof(*p));
+A_exp A_Case(A_pos pos, A_exp exp) {
+  A_exp p = checked_malloc(sizeof(*p));
+  p->kind = A_case;
   p->pos=pos;
-  p->test=test;
-  p->exp = exp;
+  p->u.casee.exp = exp;
   return p;
 }
 
-A_caseList A_CaseList(A_pos pos, A_caseList caseListt, A_case casee) {
-  A_caseList p = checked_malloc(sizeof(*p));
+A_exp A_CaseList(A_pos pos, A_exp caseListt, A_exp casee) {
+  A_exp p = checked_malloc(sizeof(*p));
   p->pos=pos;
-  p->caseListt=caseListt;
-  p->casee = casee;
+  p->u.caseListt.caseListt=caseListt;
+  p->u.caseListt.casee = casee;
   return p;
 }
 
-A_default A_Default(A_pos pos, A_exp exp) {
-  A_default p = checked_malloc(sizeof(*p));
+A_exp A_Default(A_pos pos, A_exp exp) {
+  A_exp p = checked_malloc(sizeof(*p));
+  p->kind = A_default;
   p->pos=pos;
-  p->exp=exp;
+  p->u.defaultt.exp=exp;
   return p;
 }
 
-A_switch A_Switch(A_pos pos, A_exp test, A_case casee, A_default defaultt) {
-  A_switch p = checked_malloc(sizeof(*p));
+A_exp A_Switch(A_pos pos, A_var test, A_exp caseListt) {
+  A_exp p = checked_malloc(sizeof(*p));
+  p->kind = A_switch;
   p->pos=pos;
-  p->test=test;
-  p->casee = casee;
-  p->defaultt = defaultt;
+  p->u.switchh.test=test;
+  p->u.switchh.caseListt = caseListt;
   return p;
 }

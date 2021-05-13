@@ -102,20 +102,18 @@ exp: lvalue { $$ = A_VarExp(EM_tokPos, $1); }
    | BREAK { $$ = A_BreakExp(EM_tokPos); }
    | LET decs IN expseq END { $$ = A_LetExp(EM_tokPos, $2, A_SeqExp(EM_tokPos, $4)); }
    | LPAREN expseq RPAREN { $$ = A_SeqExp(EM_tokPos, $2); }
-   | switch_exp { $$ = $1; }
+   | switch_exp  { $$ = $1; }
     ;
 
-switch_exp: SWITCH exp LBRACE case_list RBRACE  { $$ = A_Switch(EM_tokPos, $2, $4, NULL); }
-            |SWITCH exp LBRACE case_list default RBRACE { $$ = A_Switch(EM_tokPos, $2, $4,$5); }
+switch_exp: SWITCH lvalue LBRACE case_list RBRACE  { $$ = A_Switch(EM_tokPos, $2, $4); }
             
-case_list:  case  {  $$ = A_CaseList(EM_tokPos, NULL, $1); }
+case_list:  case  { $$ = $1; }
            |case_list case    { $$ = A_CaseList(EM_tokPos, $1, $2);}
+           |default           { $$ = $1; }
 
-case: CASE exp COLON exp     { $$ = A_Case(EM_tokPos, $2, $4);}
-    |CASE exp COLON explist     { $$ = A_Case(EM_tokPos, $2, $4);}
+case: CASE INT COLON exp     { $$ = A_Case(EM_tokPos, $4);}
 
 default: DEFAULT COLON exp  { $$ = A_Default(EM_tokPos, $3);}
-        |DEFAULT COLON explist      { $$ = A_Default(EM_tokPos, $3);}
 
 cond_exp:   IF exp THEN exp ELSE exp { $$ = A_IfExp(EM_tokPos, $2, $4, $6); }
       | IF exp THEN exp { $$ = A_IfExp(EM_tokPos, $2, $4, NULL); }

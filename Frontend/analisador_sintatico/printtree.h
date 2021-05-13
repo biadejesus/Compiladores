@@ -1,4 +1,3 @@
-/* function prototype from printtree.c */
 #ifndef PRINT_TREE_H
 #define PRINT_TREE_H
 

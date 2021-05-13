@@ -23,9 +23,6 @@ struct Tr_expList_ {
 };
 Tr_expList Tr_ExpList(Tr_exp head, Tr_expList tail);
 
-/**
- * 与frame模块交互的接口
- */
 Tr_level Tr_outermost();
 Tr_level Tr_newLevel(Tr_level parent, Temp_label name, U_boolList formals);
 Tr_access Tr_allocLocal(Tr_level level, bool escape);
@@ -34,9 +31,6 @@ Tr_accessList Tr_formals(Tr_level level);
 F_fragList Tr_getResult();
 void Tr_procEntryExit(Tr_level level, Tr_exp body, Tr_accessList formals);
 
-/**
- * 与semant模块交互的接口
- */
 Tr_exp Tr_noExp();
 Tr_exp Tr_nilExp();
 Tr_exp Tr_simpleVar(Tr_access access, Tr_level level);
@@ -57,9 +51,6 @@ Tr_exp Tr_breakExp(Tr_exp brk);
 Tr_exp Tr_letExp(Tr_expList exps);
 Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init);
 
-/**
- * 打印 IR TREE
- */
 void Tr_printTree(Tr_exp e);
 
 #endif
