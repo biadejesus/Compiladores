@@ -64,7 +64,7 @@ A_exp absyn_root;
   SWITCH CASE DEFAULT
 
 %type <var> lvalue
-%type <exp> program exp func_call arith_exp cmp_exp bool_exp record_create array_create loop_exp cond_exp switch_exp case case_list default
+%type <exp> program exp func_call arith_exp cmp_exp bool_exp record_create array_create loop_exp cond_exp switch_exp case case_list
 %type <dec> dec tydeclist vardec fundeclist
 %type <ty> ty
 %type <declist> decs
@@ -109,11 +109,9 @@ switch_exp: SWITCH lvalue LBRACE case_list RBRACE  { $$ = A_Switch(EM_tokPos, $2
             
 case_list:  case  { $$ = $1; }
            |case_list case    { $$ = A_CaseList(EM_tokPos, $1, $2);}
-           |default           { $$ = $1; }
 
 case: CASE INT COLON exp     { $$ = A_Case(EM_tokPos, $4);}
-
-default: DEFAULT COLON exp  { $$ = A_Default(EM_tokPos, $3);}
+      | DEFAULT COLON exp { $$ = A_Default(EM_tokPos, $3);}
 
 cond_exp:   IF exp THEN exp ELSE exp { $$ = A_IfExp(EM_tokPos, $2, $4, $6); }
       | IF exp THEN exp { $$ = A_IfExp(EM_tokPos, $2, $4, NULL); }
