@@ -1,9 +1,17 @@
 /* write a program using your new construction, such code must have 30 lines and also print something */
 let
-	var a:= 1
-	var b:= 2
-	var c:= 3
-	var d:= 0
+	var a: int := 1
+	var b: int:= 2
+	var c: int:= 3
+	var d: int:= 0
+
+    function printint(i: int) =
+        let function f(i:int) = if i>0 
+                    then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+        in if i<0 then (print("-"); f(-i))
+            else if i>0 then f(i)
+            else print("0")
+        end
 in
 
 	switch a {

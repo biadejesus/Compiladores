@@ -1,6 +1,0 @@
-/* valid code */
-let
-var i:= 10
-in
-while 10 > 5 do (i+1;())
-end

@@ -1,1 +1,18 @@
 /* create a list of strings, concatenate all e then print the frase. */
+let
+    type strings = arraystsay of string
+    var arraysts := strings [5] of "ola"
+
+    function concatstring(arraysts : strings, tam: int) : string =
+    let
+        var frase := " "
+    in
+        for i := 0 to tam do (
+            frase := concat(frase, arraysts[i]) /*  function concat (s1:string, s2:string):string Return a new string consisting of s1 followed by s2.*/
+        );
+        frase
+    end
+in
+
+    print(concatstring(arraysts, 5))
+end
