@@ -27,11 +27,27 @@ static int inside = 0;
 static Tr_exp brk[16]; 
 
 // muda 'Ty_name' para o tipo atual
-static Ty_ty actual_ty(Ty_ty ty) {
-    Ty_ty t = ty;
-    while(t->kind == Ty_name) t = t->u.name.ty;
-    return t;
+// static Ty_ty actual_ty(Ty_ty ty) {
+//     Ty_ty t = ty;
+//     while(t->kind == Ty_name) t = t->u.name.ty;
+//     return t;
+// }
+
+Ty_ty actual_ty(Ty_ty ty) {
+    if (ty->kind == Ty_name) {
+        return actual_ty(ty->u.name.ty);
+    } else {
+        return ty;
+    }
 }
+static Ty_ty S_look_ty(S_table tenv, S_symbol sym) {
+    Ty_ty t = S_look(tenv, sym);
+    if (t)
+        return actual_ty(t);
+    else
+        return NULL;
+}
+
 // Compare dois tipos reais
 // Ty_nil == Ty_record
 static bool actual_eq(Ty_ty source, Ty_ty target) {
@@ -171,7 +187,7 @@ static expty transExp(Tr_level level, S_table venv, S_table tenv, A_exp e) {
             } /* switch */
         } /* A_opExp */
         case A_recordExp: {
-            Ty_ty record_typ = S_look(tenv, e->u.record.typ);
+            Ty_ty record_typ = S_look_ty(tenv, e->u.record.typ);
             if(!record_typ) {
                 EM_error(e->pos, "tipo não definido");
                 return expTy(Tr_noExp(), Ty_Record(NULL));
@@ -296,7 +312,7 @@ static expty transExp(Tr_level level, S_table venv, S_table tenv, A_exp e) {
             return expTy(Tr_letExp(head), exp.ty);
         }
         case A_arrayExp: {
-            Ty_ty array_typ = S_look(tenv, e->u.array.typ);
+            Ty_ty array_typ = S_look_ty(tenv, e->u.array.typ);
             if(!array_typ) {
                 EM_error(e->pos, "tipo indefinido %s", S_name(e->u.array.typ));
                 exit(1);
@@ -318,6 +334,11 @@ static expty transExp(Tr_level level, S_table venv, S_table tenv, A_exp e) {
             }
             return expTy(Tr_arrayExp(size_typ.exp, init_typ.exp), actual);
         }
+        // case A_switch:
+        
+        // case A_case:
+        // case A_caseList:
+        // case A_default:
     }
     assert(0); // deveria ter retornado de alguma cláusula do switch
 }
