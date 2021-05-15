@@ -131,6 +131,20 @@ void pr_exp(FILE *out, A_exp v, int d) {
    pr_exp(out, v->u.array.size, d+1); fprintf(out, ",\n");
    pr_exp(out, v->u.array.init, d+1); fprintf(out, ")");
    break;
+ case A_case:
+   fprintf(out, "caseExp(\n");
+   pr_exp(out, v->u.casee.exp, d+1); fprintf(out, ")");
+   break;
+ case A_switch:
+   fprintf(out, "switchExp(\n");
+   pr_var(out, v->u.switchh.test, d+1); fprintf(out, ")");
+   pr_exp(out, v->u.switchh.caseListt, d+1); fprintf(out, ")");
+   break;
+ case A_caseList:
+   fprintf(out, "caseListExp(\n");
+   pr_exp(out, v->u.caseListt.caseListt, d+1); fprintf(out, ",\n");
+   pr_exp(out, v->u.caseListt.casee, d+1); fprintf(out, ")");;
+   break;
  default:
    assert(0); 
  } 
