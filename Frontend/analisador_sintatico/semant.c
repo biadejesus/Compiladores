@@ -23,15 +23,10 @@ static expty transExp(Tr_level level, S_table venv, S_table tenv, A_exp e);
 static Tr_exp transDec(Tr_level level, S_table venv, S_table tenv, A_dec d);
 static Ty_ty transTy (S_table tenv, A_ty t);
 
+
+
 static int inside = 0;
 static Tr_exp brk[16]; 
-
-// muda 'Ty_name' para o tipo atual
-// static Ty_ty actual_ty(Ty_ty ty) {
-//     Ty_ty t = ty;
-//     while(t->kind == Ty_name) t = t->u.name.ty;
-//     return t;
-// }
 
 Ty_ty actual_ty(Ty_ty ty) {
     if (ty->kind == Ty_name) {
@@ -334,11 +329,15 @@ static expty transExp(Tr_level level, S_table venv, S_table tenv, A_exp e) {
             }
             return expTy(Tr_arrayExp(size_typ.exp, init_typ.exp), actual);
         }
-        // case A_switch:
+        case A_switch: {
+        }
         
-        // case A_case:
-        // case A_caseList:
-        // case A_default:
+        case A_case: {
+        }
+        case A_caseList: {
+        }
+        case A_default: {
+        }
     }
     assert(0); // deveria ter retornado de alguma cláusula do switch
 }

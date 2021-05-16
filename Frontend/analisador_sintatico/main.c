@@ -1,157 +1,126 @@
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <unistd.h>
-// #include "util.h"
-// #include <string.h>
-// #include "parse.h"
-// #include "absyn.h"
-// #include "prabsyn.h"
-// #include "semant.h"
-// #include "frame.h"
-// #include "translate.h"
-// //#include "canon.h"
-// //#include "mipsgen.h"
-// #include "escape.h"
+#include "absyn.h"
+#include "assem.h"
+#include "canon.h"
+#include "codegen.h"
+#include "errormsg.h"
+#include "escape.h"
+#include "frame.h"
+#include "parse.h"
+#include "prabsyn.h"
+#include "printtree.h"
+#include "semant.h"
+#include "symbol.h"
+#include "temp.h"
+#include "tree.h"
+#include "util.h"
+#include <getopt.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
+int printar_abs = 0, printar_ir = 0, printar_can = 0, printar_ass = 0;
 
-// void main(int argc, char **argv) {
-//     int param, print_abs = 0, print_ir = 0, print_canon = 0, print_assem = 0;
-//     string fname = checked_malloc(50);
-//     FILE *out = stdout;
-//     A_exp absyn_tree_root;
+static void do_proc(FILE *out, F_frame frame, T_stm body) {
+  AS_instrList instr_l = NULL;
+  T_stmList stm_l = NULL;
 
-//     read_params(argc, argv, fname, &print_abs, &print_ir, &print_canon, &print_assem);
+  stm_l = C_linearize(body);
+  stm_l = C_traceSchedule(C_basicBlocks(stm_l));
+  if (printar_can) {
+    printStmList(out, stm_l);
+  }
 
-//   absyn_tree_root = parse(fname);
-//   if (absyn_tree_root == NULL) {
-//     fprintf(stderr, "parsing failed!\n");
-//     return 0;
-//   }
+  if (printar_ass) {
+    instr_l = F_codegen(frame, stm_l);
+    AS_printInstrList(out, instr_l, F_tempMap());
+  }
+}
 
-//   if (print_abs) {
-//     fprintf(out, "============= Absyn  Tree =============\n");
-//     pr_exp(out, absyn_tree_root, 0);
-//     fprintf(out, "\n\n\n");
-//   }
+int main(int argc, char *argv[]) {
+  int parametros;
+  string fname = checked_malloc(50);
+  FILE *out = stdout;
+  A_exp abs_tree_root;
+  F_fragList frags;
 
-//   Esc_findEscape(absyn_tree_root);
+  //   if (argc != 2) {
+  //     fprintf(stderr, "uso: tc no nome do arquivo\n");
+  //     return 1;
+  //   }
 
-//   F_fragList frags = SEM_transProg(absyn_tree_root, print_ir);
+  abs_tree_root = parse(fname);
 
-//   for(F_fragList f = frags; f; f = f->tail) {
-//     if(f->head->kind == F_procFrag) {
-//       do_proc(out, f->head->u.proc.frame, f->head->u.proc.body, print_canon, print_assem);
-//     }
-//   }
-//   string fname = checked_malloc(50);
-//   A_exp absyn_tree_root;
+  Esc_findEscape(abs_tree_root);
 
-//   int opt;
-//   while ((opt = getopt(argc, argv, "p:a:i:c:h")) != -1) {
-//     switch (opt) {
-// 			case 'p': // nome do programa de entrada
-// 				strcpy(fname, optarg);
-// 				break;
+  frags = SEM_transProg(abs_tree_root);
 
-// 			case 'a': // imprime a arvore sintatica abstrata
-// 				absyn_tree_root = parse(fname);
-// 				if (absyn_tree_root)
-// 					pr_exp(stdout, absyn_tree_root, 0);
-// 				else {
-// 					fprintf(stderr, "parsing falhou!\n");
-// 				}
-// 				break;
+  //   fprintf(out, "------------------ CODIGO EM ASSEMBLY
+  //   ------------------\n"); for (F_fragList f = frags; f; f = f->tail) {
+  //     if (f->head->kind == F_procFrag) {
+  //       do_proc(out, f->head->u.proc.frame, f->head->u.proc.body);
+  //     }
+  //   }
+  //   /* string */
+  //   for (F_fragList f = frags; f; f = f->tail) {
+  //     if (f->head->kind == F_stringFrag) {
+  //       do_string(out, f->head->u.proc.frame, f->head->u.proc.body);
+  //     }
+  //   }
+  //   fprintf(out, "\n------------------ FIM ------------------\n\n");
 
-// 			case 'i': // imprime a representação intermediária
-// 				absyn_tree_root = parse(fname);
-// 				if (absyn_tree_root) {
-// 					F_fragList fl = SEM_transProg(absyn_tree_root, 1);
-// 				} else {
-// 					fprintf(stderr, "parsing falhou!\n");
-// 				}
+  char *input_file = NULL;
+  char *output_file = NULL;
+  int bosta = 0;
 
-// 				break;
-//     }
-//   }
-// }
+  int opt;
+  while ((opt = getopt(argc, argv, "aho:p:isc")) != -1) {
+    switch (opt) {
+    case 'p': // nome do programa de entrada
+      input_file = (char *)malloc(strlen(optarg));
+      strcpy(input_file, optarg);
+      break;
 
-// static void do_proc(FILE *out, F_frame frame, T_stm body, int print_canon, int print_assem) {
-//   AS_instrList instr_l = NULL;
-//   T_stmList stm_l = NULL;
+    case 'o':
+      output_file = (char *)malloc(strlen(optarg));
+      strcpy(output_file, optarg);
+      break;
 
-//   stm_l = C_linearize(body);
-//   stm_l = C_traceSchedule(C_basicBlocks(stm_l));
+    case 'a': // imprime a arvore sintatica abstrata
+      bosta = 1;
+      break;
 
-//   instr_l = F_codegen(frame, stm_l);
+    case 'i': // imprime a representação intermediária
+      if (abs_tree_root) {
+        fprintf(out, "------------------ IR ------------------\n");
+        F_fragList fl = SEM_transProg(abs_tree_root);
+        fprintf(out, "\n------------------ FIM ------------------\n\n");
+        fprintf(out, "\n\n\n");
+      } else {
+        fprintf(stderr, "parsing falhou!\n");
+      }
+      break;
 
-//   if (print_canon) {
-//     fprintf(out, "============== Canon  IR ==============\n");
-//     Tr_printCanonTree(stm_l);
-//     fprintf(out, "\n\n\n");
-//   }
+    default:
+      printf("aaaaaa");
+      break;
+      // case 'c': //imprime a representação intermediária após a geração de
+      // árvores canônicas.
 
-//   if (print_assem) {
-//     fprintf(out, "========== Assembly w/o regs ==========\n");
-//     AS_printInstrList(out, instr_l, F_tempMap());
-//   }
-// }
-
-// static void read_params(int argc, char **argv, string fname, int *abs, int *ir, int *canon, int *assem) {
-//   int param;
-
-//   while ((param = getopt(argc, argv, "p:aics")) != -1) {
-//     switch(param) {
-//       case 'p':
-//         strcpy(fname, optarg);
-//       break;
-      
-//       case 'a':
-//         *abs = 1;
-//       break;
-
-//       case 'i':
-//         *ir = 1;
-//       break;
-
-//       case 'c':
-//         *canon = 1;
-//       break;
-
-//       case 's':
-//         *assem = 1;
-//       break;
-//     }
-//   }
-// }
-
-// int main(int argc, char **argv) {
-//   int param, print_abs = 0, print_ir = 0, print_canon = 0, print_assem = 0;
-//   string fname = checked_malloc(50);
-//   FILE *out = stdout;
-//   A_exp absyn_tree_root;
-
-//   read_params(argc, argv, fname, &print_abs, &print_ir, &print_canon, &print_assem);
-
-//   absyn_tree_root = parse(fname);
-//   if (absyn_tree_root == NULL) {
-//     fprintf(stderr, "parsing failed!\n");
-//     return 0;
-//   }
-
-//   if (print_abs) {
-//     fprintf(out, "============= Absyn  Tree =============\n");
-//     pr_exp(out, absyn_tree_root, 0);
-//     fprintf(out, "\n\n\n");
-//   }
-
-//   Esc_findEscape(absyn_tree_root);
-
-//   F_fragList frags = SEM_transProg(absyn_tree_root, print_ir);
-
-//   for(F_fragList f = frags; f; f = f->tail) {
-//     if(f->head->kind == F_procFrag) {
-//       do_proc(out, f->head->u.proc.frame, f->head->u.proc.body, print_canon, print_assem);
-//     }
-//   }
-
-// }
+      // case 's': //imprime o código Assembly (antes da alocação de
+      // registradores) case 'S': //imprime o código assembly (após da alocação
+      // de registradores) case 'h': //help
+    }
+  }
+  if (bosta) {
+    if (abs_tree_root) {
+      fprintf(out, "------------------ ARVORE ABSTRATA  ------------------\n");
+      pr_exp(out, abs_tree_root, 0);
+      fprintf(out, "\n------------------ FIM ------------------\n\n");
+      fprintf(out, "\n\n\n");
+    } else {
+      fprintf(stderr, "print da arvore abstrata falhou\n");
+    }
+  }
+  return 0;
+}
