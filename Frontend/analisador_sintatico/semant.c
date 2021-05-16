@@ -54,10 +54,13 @@ static bool actual_eq(Ty_ty source, Ty_ty target) {
            (t1->kind != Ty_record && t1->kind != Ty_array && t1->kind == t2->kind);
 }
 
-F_fragList SEM_transProg(A_exp exp) {
+F_fragList SEM_transProg(A_exp exp, int printa) {
     S_table venv = E_base_venv(), tenv = E_base_tenv();
     expty trans_exp = transExp(Tr_outermost(), venv, tenv, exp);
-    Tr_printTree(trans_exp.exp);
+    if(printa){
+     Tr_printTree(trans_exp.exp);
+    }
+    Tr_procEntryExit(Tr_outermost(), trans_exp.exp, NULL);
     return Tr_getResult();
 }
 

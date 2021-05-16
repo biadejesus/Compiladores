@@ -1,3 +1,7 @@
+/*
+ * printtree.c - functions to print out intermediate representation (IR) trees.
+ *
+ */
 #include <stdio.h>
 #include "util.h"
 #include "symbol.h"
@@ -5,6 +9,7 @@
 #include "tree.h"
 #include "printtree.h"
 
+/* local function prototype */
 static void pr_tree_exp(FILE *out, T_exp exp, int d);
 
 static void indent(FILE *out, int d) {
@@ -89,7 +94,7 @@ static void pr_tree_exp(FILE *out, T_exp exp, int d)
      fprintf(out, ")");
      break;
    }
-  } 
+  } /* end of switch */
 }
 
 void printStmList (FILE *out, T_stmList stmList) 

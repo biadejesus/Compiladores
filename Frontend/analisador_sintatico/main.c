@@ -28,50 +28,26 @@ static void do_proc(FILE *out, F_frame frame, T_stm body) {
   stm_l = C_linearize(body);
   stm_l = C_traceSchedule(C_basicBlocks(stm_l));
   if (printar_can) {
+    fprintf(out, "------------------ CANONICA  ------------------\n");
     printStmList(out, stm_l);
   }
 
   if (printar_ass) {
+    fprintf(out, "------------------ ASSEMBLY ------------------\n");
     instr_l = F_codegen(frame, stm_l);
     AS_printInstrList(out, instr_l, F_tempMap());
   }
 }
+static void do_string(FILE *out, F_frame frame, T_stm body) {}
 
 int main(int argc, char *argv[]) {
   int parametros;
   string fname = checked_malloc(50);
   FILE *out = stdout;
   A_exp abs_tree_root;
-  F_fragList frags;
-
-  //   if (argc != 2) {
-  //     fprintf(stderr, "uso: tc no nome do arquivo\n");
-  //     return 1;
-  //   }
-
-  abs_tree_root = parse(fname);
-
-  Esc_findEscape(abs_tree_root);
-
-  frags = SEM_transProg(abs_tree_root);
-
-  //   fprintf(out, "------------------ CODIGO EM ASSEMBLY
-  //   ------------------\n"); for (F_fragList f = frags; f; f = f->tail) {
-  //     if (f->head->kind == F_procFrag) {
-  //       do_proc(out, f->head->u.proc.frame, f->head->u.proc.body);
-  //     }
-  //   }
-  //   /* string */
-  //   for (F_fragList f = frags; f; f = f->tail) {
-  //     if (f->head->kind == F_stringFrag) {
-  //       do_string(out, f->head->u.proc.frame, f->head->u.proc.body);
-  //     }
-  //   }
-  //   fprintf(out, "\n------------------ FIM ------------------\n\n");
 
   char *input_file = NULL;
   char *output_file = NULL;
-  int bosta = 0;
 
   int opt;
   while ((opt = getopt(argc, argv, "aho:p:isc")) != -1) {
@@ -87,39 +63,56 @@ int main(int argc, char *argv[]) {
       break;
 
     case 'a': // imprime a arvore sintatica abstrata
-      bosta = 1;
+      printar_abs = 1;
       break;
 
     case 'i': // imprime a representação intermediária
-      if (abs_tree_root) {
-        fprintf(out, "------------------ IR ------------------\n");
-        F_fragList fl = SEM_transProg(abs_tree_root);
-        fprintf(out, "\n------------------ FIM ------------------\n\n");
-        fprintf(out, "\n\n\n");
-      } else {
-        fprintf(stderr, "parsing falhou!\n");
-      }
+      fprintf(out, "------------------ IR ------------------\n");
+      printar_ir = 1;
       break;
+
+    case 'c': // imprime a representação intermediária após a geração de árvores
+              // canônicas.
+      printar_can = 1;
+      break;
+
+    case 's': // imprime o código Assembly (antes da alocação de registradores)
+      printar_ass = 1;
+      break;
+    case 'h': // help
+      printf("help");
 
     default:
-      printf("aaaaaa");
+      if (argc != 2) {
+        fprintf(stderr, "uso: ./tc -p nome do arquivo\n");
+        return 1;
+      }
       break;
-      // case 'c': //imprime a representação intermediária após a geração de
-      // árvores canônicas.
-
-      // case 's': //imprime o código Assembly (antes da alocação de
-      // registradores) case 'S': //imprime o código assembly (após da alocação
-      // de registradores) case 'h': //help
     }
   }
-  if (bosta) {
+  abs_tree_root = parse(input_file);
+  F_fragList frags = SEM_transProg(abs_tree_root, printar_ir);
+
+  if (printar_abs) {
     if (abs_tree_root) {
       fprintf(out, "------------------ ARVORE ABSTRATA  ------------------\n");
-      pr_exp(out, abs_tree_root, 0);
-      fprintf(out, "\n------------------ FIM ------------------\n\n");
+      pr_exp(stdout, abs_tree_root, 0);
+
       fprintf(out, "\n\n\n");
     } else {
       fprintf(stderr, "print da arvore abstrata falhou\n");
+    }
+  }
+  if (printar_can || printar_ass) {
+
+    if (abs_tree_root) {
+      for (F_fragList f = frags; f; f = f->tail) {
+        if (f->head->kind == F_procFrag) {
+          do_proc(out, f->head->u.proc.frame, f->head->u.proc.body);
+        }
+      }
+    } else {
+      printf("erro");
     }
   }
   return 0;

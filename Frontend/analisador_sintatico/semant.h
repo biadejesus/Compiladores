@@ -5,6 +5,6 @@
 #include "frame.h"
 #include "tree.h"
 
-F_fragList SEM_transProg(A_exp exp);
+F_fragList SEM_transProg(A_exp exp, int printa);
 
 #endif

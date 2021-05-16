@@ -69,12 +69,12 @@ tree.o: tree.h
 printtree.o: printtree.h
 translatetest.o: translatetest.c errormsg.h util.h absyn.h symbol.h frame.h
 
-# # canon
-# canon.o: canon.h
+# canon
+canon.o: canon.h
 
-# # instruction
-# assme.o: assem.h
-# mipscodegen.o: codegen.h
+# instruction
+assme.o: assem.h
+mipscodegen.o: codegen.h
 
 .PHONY: clean
 clean:
