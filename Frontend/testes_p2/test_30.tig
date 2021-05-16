@@ -1,0 +1,14 @@
+/* write a program using your new construction */
+let
+	var a:= 1
+in
+
+	switch a {
+		case 1:
+			a := 2
+		case 2:
+			a := 5
+		default:
+			a := 1
+	} 
+end
