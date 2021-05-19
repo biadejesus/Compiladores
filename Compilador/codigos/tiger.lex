@@ -91,9 +91,13 @@ void adjust(void) {
 <INITIAL>function {adjust(); return FUNCTION;}
 <INITIAL>var      {adjust(); return VAR;}
 <INITIAL>type     {adjust(); return TYPE;}
-
-  /* id */
+<INITIAL>[0-9]+	 {adjust(); yylval.ival=atoi(yytext); return INT;}
 <INITIAL>[a-zA-Z][a-zA-Z0-9_]* {adjust(); yylval.sval=String(yytext); return ID;}
+
+
+
+
+
 
   /* string */
 <INITIAL>\"   {adjust(); buffer(); BEGIN INSTRING;}
@@ -112,10 +116,7 @@ void adjust(void) {
 <INSTRING>\\[ \n\t\f]+\\ {adjust(); int i; for(i = 0; yytext[i]; ++i) if(yytext[i] == '\n') EM_newline(); continue;}
 <INSTRING>[^\\\n\"]* {adjust(); char *tmp = yytext; while(*tmp) append(*tmp++);}
 
-  /* integer */
-<INITIAL>[0-9]+	 {adjust(); yylval.ival=atoi(yytext); return INT;}
-
-  /* comment  */
+  /* comentario  */
 "/*" {adjust(); contador_comment+=1; BEGIN COMMENT;}
 <COMMENT>"*/" {adjust(); contador_comment-=1; if(contador_comment==0) BEGIN 0;}
 <COMMENT><<EOF>> {adjust(); EM_error(EM_tokPos,"unclose comment"); yyterminate();}

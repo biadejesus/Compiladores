@@ -5,8 +5,6 @@
 #include "absyn.h"
 #include "y.tab.h"
 
-
-
 int yylex(void); 
 
 string toknames[] = { 
@@ -18,9 +16,8 @@ string toknames[] = {
 "LET", "IN", "END", "BREAK", "NIL", "VAR", "SWITCH", "CASE", "DEFAULT",
 };
 
-
 string tokname(int tok) {
-  return tok<258 || tok>305 ? "BAD_TOKEN" : toknames[tok-258];
+  return tok<258 || tok>302 ? "BAD_TOKEN" : toknames[tok-258];
 }
 
 int main(int argc, char **argv) {

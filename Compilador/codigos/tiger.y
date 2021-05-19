@@ -35,22 +35,6 @@ A_exp absyn_root;
   A_efieldList efieldlist;
   }
 
-%left LOW
-%left TYPE FUNCTION
-%left ID
-%left LBRACK
-%left DO OF
-%left THEN
-%left ELSE
-%left SEMICOLON
-%left ASSIGN
-%left OR
-%left AND
-%left EQ NEQ LT LE GT GE
-%left PLUS MINUS
-%left TIMES DIVIDE
-%left UMINUS
-
 %token <sval> ID STRING
 %token <ival> INT
 %token 
@@ -62,21 +46,19 @@ A_exp absyn_root;
   BREAK NIL
   FUNCTION VAR TYPE
   SWITCH CASE DEFAULT
+  LOW  
+  UMINUS
 
 %type <var> lvalue
-%type <exp> program exp func_call arith_exp cmp_exp bool_exp record_create array_create loop_exp cond_exp switch_exp case case_list
-%type <dec> dec tydeclist vardec fundeclist
+%type <exp> program exp func_call arith_exp cmp_exp bool_exp array_create loop_exp cond_exp switch_exp case case_list
+%type <dec> dec vardec fundeclist tydeclist
 %type <ty> ty
 %type <declist> decs
 %type <explist> explist explist_nonempty expseq
 %type <field> tyfield
-%type <fieldlist> tyfields tyfields_nonempty
+%type <fieldlist> tyfields 
 %type <fundec> fundec
-//%type <fundeclist>
 %type <namety> tydec
-//%type <nametylist>
-%type <efield> record_create_field
-%type <efieldlist> record_create_list record_create_list_nonempty
 
 %start program
 
@@ -94,7 +76,6 @@ exp: lvalue { $$ = A_VarExp(EM_tokPos, $1); }
    | arith_exp     { $$ = $1; }
    | cmp_exp       { $$ = $1; }
    | bool_exp      { $$ = $1; }
-   | record_create { $$ = $1; }
    | array_create  { $$ = $1; }
    | lvalue ASSIGN exp { $$ = A_AssignExp(EM_tokPos, $1, $3); }
    | cond_exp     { $$ = $1; }
@@ -147,16 +128,6 @@ cmp_exp: exp EQ exp  { $$ = A_OpExp(EM_tokPos, A_eqOp, $1, $3); }
 bool_exp: exp AND exp { $$ = A_IfExp(EM_tokPos, $1, $3, A_IntExp(EM_tokPos, 0)); }
         | exp OR exp  { $$ = A_IfExp(EM_tokPos, $1, A_IntExp(EM_tokPos, 1), $3); }
 
-record_create: ID LBRACE record_create_list RBRACE { $$ = A_RecordExp(EM_tokPos, S_Symbol($1), $3); }
-
-record_create_list: { $$ = NULL; }
-                  | record_create_list_nonempty { $$ = $1; }
-
-record_create_list_nonempty: record_create_field { $$ = A_EfieldList($1, NULL); }
-                           | record_create_field COMMA record_create_list_nonempty { $$ = A_EfieldList($1, $3); }
-
-record_create_field: ID EQ exp { $$ = A_Efield(S_Symbol($1), $3); }
-
 array_create: ID LBRACK exp RBRACK OF exp { $$ = A_ArrayExp(EM_tokPos, S_Symbol($1), $3, $6); }
 
 decs:          { $$ = NULL; }
@@ -169,6 +140,7 @@ dec: tydeclist  { $$ = $1; }
 tydeclist: tydec %prec LOW { $$ = A_TypeDec(EM_tokPos, A_NametyList($1, NULL)); }
          | tydec tydeclist { $$ = A_TypeDec(EM_tokPos, A_NametyList($1, $2->u.type)); }
 
+
 tydec: TYPE ID EQ ty       { $$ = A_Namety(S_Symbol($2), $4); }
 
 ty: ID                     { $$ = A_NameTy(EM_tokPos, S_Symbol($1)); }
@@ -176,10 +148,8 @@ ty: ID                     { $$ = A_NameTy(EM_tokPos, S_Symbol($1)); }
   | ARRAY OF ID            { $$ = A_ArrayTy(EM_tokPos, S_Symbol($3)); }
 
 tyfields:                   { $$ = NULL; }
-        | tyfields_nonempty { $$ = $1; }
-
-tyfields_nonempty: tyfield                         { $$ = A_FieldList($1, NULL); }
-                 | tyfield COMMA tyfields_nonempty { $$ = A_FieldList($1, $3); }
+        | tyfield             { $$ = $1; }
+        | tyfield COMMA tyfields { $$ = $1; }
 
 tyfield: ID COLON ID { $$ = A_Field(EM_tokPos, S_Symbol($1), S_Symbol($3)); }
 
